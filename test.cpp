@@ -93,6 +93,17 @@ int main(){
         cout << P.Tab[i].contenu << "\t";
         if((i+1) % 8 == 0) cout << endl; 
     }
+    cout << "test move" << endl;
+    Case c1 = {0, RB};
+    Case c2 = {16, Vide};
+    move_piece(P,c1,c2);
+    for (int i=0; i<64; i++){
+        cout << P.Tab[i].contenu << "\t";
+        if((i+1) % 8 == 0) cout << endl; 
+    }
+
+    
+    
 
     return 0;
 }
