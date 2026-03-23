@@ -1,8 +1,8 @@
-echecs: main.o board.o mask.o types.o view.o
-	g++ main.o board.o mask.o types.o view.o -o echecs
+echecs: main1.o board.o mask.o view.o
+	g++ main1.o board.o mask.o view.o -o echecs
 
-main.o: main.cpp
-	g++ -c main.cpp
+main1.o: main1.cpp
+	g++ -c main1.cpp
 
 board.o: board.cpp
 	g++ -c board.cpp
@@ -10,8 +10,5 @@ board.o: board.cpp
 mask.o: mask.cpp
 	g++ -c mask.cpp
 
-types.o: types.cpp
-	g++ -c types.cpp
-
-view.o: view.cpp
+view.o: view.cpp²
 	g++ -c view.cpp
