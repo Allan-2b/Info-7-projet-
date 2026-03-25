@@ -1,12 +1,24 @@
 #include <iostream>
+#include <cstdio>
+#include <cstdlib>
+
+
+#ifdef _WIN32
+#include <windows.h>
+#endif
+
 #include "board.hpp"
 #include "types.hpp"
 #include "view.hpp"
-#include <cstdio>
-#include <cstdlib>
+
+
 using namespace std;
 
 int main(){
+    #ifdef _WIN32
+    SetConsoleOutputCP(65001); // Force le terminal en UTF-8
+    #endif
+    
     Plateau P;
     start(&P);
     print_board(P);

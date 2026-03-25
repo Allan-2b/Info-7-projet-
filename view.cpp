@@ -4,10 +4,12 @@
 #include <math.h>
 #include <cmath>
 #include <cfloat>
+#include <windows.h>
 #include "board.hpp"
 #include "types.hpp"
 #include "view.hpp"
 using namespace std;
+
 
 
 void print_square(Case c){
@@ -31,10 +33,10 @@ void print_square(Case c){
             cout << "♘";
             break;
         case BB:
-            cout << "♗";
+            cout << "♝";
             break;
         case BW:
-            cout << "♝";
+            cout << "♗";
             break;
         case QB:
             cout << "♛";
@@ -49,7 +51,7 @@ void print_square(Case c){
             cout << "♔";
             break;
         case Vide:
-            cout << "-";
+            cout << ".";
             break;
     }
 
@@ -84,21 +86,29 @@ void print_square_color(Case c){
 
 
 void print_board(Plateau P){
-    cout << "\n    a   b   c   d   e   f   g   h" << endl;
-    cout << "  ---------------------------------" << endl;
+    cout << "\n   ";
+    for (int col = 0; col < 8; col++) {
+        cout << " " << static_cast<char>('a' + col) << " ";
+    }
+    cout << endl;
+    cout << "  --------------------------" << endl;
 
     for (int ligne = 0; ligne < 8; ligne++){
-        cout << (8 - ligne) << " |";
+        cout << (8 - ligne) << " |"; 
         for (int col = 0; col < 8; col++){
             int i = ligne * 8 + col;
             print_square_color(P.Tab[i]);
             if (col == 7) {
-            cout << " |" << (8 - ligne) << endl;
+                cout << " |" << (8 - ligne) << endl;
             }
         }
     }
-    cout << "  ---------------------------------" << endl;
-    cout << "    a   b   c   d   e   f   g   h" << endl;
+    cout << "  --------------------------" << endl;
+    cout << "   ";
+    for (int col = 0; col < 8; col++) {
+        cout << " " << static_cast<char>('a' + col) << " ";
+    }
+    cout << endl;
 }
 
 string write_fen(string fopen, Plateau P){
@@ -147,9 +157,10 @@ string write_fen(string fopen, Plateau P){
 
 }
 
-void read_FEN(const string& fopen, Plateau P){
+void read_FEN(const string& fopen, Plateau& P){
     ifstream fic(fopen.c_str());
     if (fic) {
+        empty(&P);
         string fen;
         fic >> fen;
         fic.close();
@@ -162,7 +173,10 @@ void read_FEN(const string& fopen, Plateau P){
 
             else if (c >= '1' and c <= '8') {
                 int cases_vides = c - '0'; 
-                index += cases_vides; 
+                for (int k = 0; k < cases_vides and index < 64; k++){
+                    P.Tab[index].contenu = Vide;
+                    index++;
+                }
             } else {
                 switch (c) {
                     case 'p':
@@ -202,7 +216,9 @@ void read_FEN(const string& fopen, Plateau P){
                         P.Tab[index].contenu = KW;
                         break;
                 }
-                index++;
+                if (index < 64){
+                    index++;
+                }
             }
         }
     }
