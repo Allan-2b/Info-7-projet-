@@ -22,3 +22,5 @@ int main(){
     
     return 0;
 }
+
+//test de la fonction write_fen
