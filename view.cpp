@@ -51,7 +51,7 @@ void print_square(Case c){
             cout << "♔";
             break;
         case Vide:
-            cout << ".";
+            cout << " ";
             break;
     }
 
@@ -64,18 +64,18 @@ void set_background(Case c){
         cout << "\x1b[48;5;223m";
     }
 }
-
-void print_square_color(Case c){
-    set_background(c);
+void set_foreground(Case c){
     if (c.contenu == PW or c.contenu == RW or c.contenu == NW or
         c.contenu == BW or c.contenu == QW or c.contenu == KW) {
         cout << "\x1b[38;5;15m";
-    } else if (c.contenu == Vide) {
-        cout << "\x1b[38;5;240m";
-    } else {
+    }
+    else {
         cout << "\x1b[38;5;16m";
     }
-
+}
+void print_square_color(Case c){
+    set_background(c);
+    set_foreground(c);
     cout << " ";
     print_square(c);
     cout << " ";

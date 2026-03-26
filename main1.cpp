@@ -25,8 +25,7 @@ int main(){
     FILE *fichier = fopen("test.csv", "w");
     fprintf(fichier, "test");
 
-
-
+    fclose(fichier);
     cout << endl;
     move_piece(&P, P.Tab[11], P.Tab[19]);
     print_board(P);
@@ -34,5 +33,3 @@ int main(){
     
     return 0;
 }
-
-//test de la fonction write_fen
