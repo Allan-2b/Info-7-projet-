@@ -15,4 +15,8 @@ struct Plateau{
     Case Tab[64];
 };
 
+struct Masque{
+    int Tab[64];
+};
+
 #endif
