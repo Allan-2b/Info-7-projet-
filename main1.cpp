@@ -3,9 +3,11 @@
 #include <cstdlib>
 
 
+/*
 #ifdef _WIN32
 #include <windows.h>
 #endif
+*/
 
 #include "board.hpp"
 #include "types.hpp"
@@ -15,9 +17,12 @@
 using namespace std;
 
 int main(){
+    
+    /*
     #ifdef _WIN32
-    SetConsoleOutputCP(65001); // Force le terminal en UTF-8
+    SetConsoleOutputCP(65001); 
     #endif
+    */
     
     Plateau P;
     start(&P);

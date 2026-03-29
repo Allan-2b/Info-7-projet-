@@ -4,7 +4,7 @@
 #include <math.h>
 #include <cmath>
 #include <cfloat>
-#include <windows.h>
+/*#include <windows.h>*/
 #include "board.hpp"
 #include "types.hpp"
 #include "view.hpp"
