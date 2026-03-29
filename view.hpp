@@ -13,6 +13,6 @@ void print_square_color(Case c);
 void set_background(Case c);
 void set_foreground(Case c);
 string write_fen(string fopen, Plateau P);
-void read_FEN(const string& fopen, Plateau P);
+void read_FEN(const string& fopen, Plateau* P);
 
 #endif 

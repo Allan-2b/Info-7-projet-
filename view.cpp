@@ -157,63 +157,63 @@ string write_fen(string fopen, Plateau P){
 
 }
 
-void read_FEN(const string& fopen, Plateau& P){
+void read_FEN(const string& fopen, Plateau* P){
     ifstream fic(fopen.c_str());
     if (fic) {
-        empty(&P);
+        empty(P);
         string fen;
         fic >> fen;
         fic.close();
 
         int index = 0;
         for (char c : fen) {
-            if (c == '/') {
+            if (c == '/') { // On parcourt chaques caractères de la chaîne FEN, si on rencontre un '/' on
                 continue; 
             } 
 
             else if (c >= '1' and c <= '8') {
                 int cases_vides = c - '0'; 
                 for (int k = 0; k < cases_vides and index < 64; k++){
-                    P.Tab[index].contenu = Vide;
+                    P->Tab[index].contenu = Vide;
                     index++;
                 }
             } else {
                 switch (c) {
                     case 'p':
-                        P.Tab[index].contenu = PB;
+                        P->Tab[index].contenu = PB;
                         break;
                     case 'P':
-                        P.Tab[index].contenu = PW;
+                        P->Tab[index].contenu = PW;
                         break;
                     case 'r':
-                        P.Tab[index].contenu = RB;
+                        P->Tab[index].contenu = RB;
                         break;
                     case 'R':
-                        P.Tab[index].contenu = RW;
+                        P->Tab[index].contenu = RW;
                         break;
                     case 'n':
-                        P.Tab[index].contenu = NB;
+                        P->Tab[index].contenu = NB;
                         break;
                     case 'N':
-                        P.Tab[index].contenu = NW;
+                        P->Tab[index].contenu = NW;
                         break;
                     case 'b':
-                        P.Tab[index].contenu = BB;
+                        P->Tab[index].contenu = BB;
                         break;
                     case 'B':
-                        P.Tab[index].contenu = BW;
+                        P->Tab[index].contenu = BW;
                         break;
                     case 'q':
-                        P.Tab[index].contenu = QB;
+                        P->Tab[index].contenu = QB;
                         break;
                     case 'Q':
-                        P.Tab[index].contenu = QW;
+                        P->Tab[index].contenu = QW;
                         break;
                     case 'k':
-                        P.Tab[index].contenu = KB;
+                        P->Tab[index].contenu = KB;
                         break;
                     case 'K':
-                        P.Tab[index].contenu = KW;
+                        P->Tab[index].contenu = KW;
                         break;
                 }
                 if (index < 64){
