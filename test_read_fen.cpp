@@ -3,7 +3,7 @@
 #include "view.hpp"
 using namespace std;
 
-
+/* Lit la représentation FEN d'un plateau et l'affiche à partir du fichier read_FEN */
 int main(int argc, char* argv[]){
     if (argc != 2){
         cerr << "Usage: " << argv[0] << " <fichier_fen>" << endl;

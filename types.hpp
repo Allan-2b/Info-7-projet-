@@ -4,7 +4,7 @@
 
 // définitions et déclarations de fonctions / types
 
-enum pieces_type{KW,KB,PW,PB,NW,NB,BW,BB,QW,QB,RB,RW,Vide};
+enum pieces_type{KW,KB,PW,PB,NW,NB,BW,BB,QW,QB,RW,RB,Vide};
 
 struct Case{
     int coordonee;

@@ -4,14 +4,14 @@
 #include <math.h>
 #include <cmath>
 #include <cfloat>
-/*#include <windows.h>*/
+#include <windows.h>
 #include "board.hpp"
 #include "types.hpp"
 #include "view.hpp"
 using namespace std;
 
 
-
+/*Affiche le symbole correspondant au contenu de la case */
 void print_square(Case c){
     switch (c.contenu) {
         case PB:
@@ -57,6 +57,7 @@ void print_square(Case c){
 
 }
 
+/*met en place la couleur de fond d'une case */
 void set_background(Case c){
     if ((c.coordonee / 8 + c.coordonee % 8) % 2 == 0) {
         cout << "\x1b[48;5;180m";
@@ -64,6 +65,8 @@ void set_background(Case c){
         cout << "\x1b[48;5;223m";
     }
 }
+
+/*met en place la couleur du texte d'une case (couleur du symbole)*/
 void set_foreground(Case c){
     if (c.contenu == PW or c.contenu == RW or c.contenu == NW or
         c.contenu == BW or c.contenu == QW or c.contenu == KW) {
@@ -73,6 +76,8 @@ void set_foreground(Case c){
         cout << "\x1b[38;5;16m";
     }
 }
+
+/*affiche une case avec sa couleur de fond et de texte grace à set_background et set_foreground*/
 void print_square_color(Case c){
     set_background(c);
     set_foreground(c);
@@ -84,7 +89,7 @@ void print_square_color(Case c){
 
 
 
-
+/*affiche le plateau avec les couleurs de fond et de texte sans masque */
 void print_board(Plateau P){
     cout << "\n   ";
     for (int col = 0; col < 8; col++) {
@@ -111,6 +116,7 @@ void print_board(Plateau P){
     cout << endl;
 }
 
+/*écris dans un fichier la représentation Fen du plateau */
 string write_fen(string fopen, Plateau P){
     string fen = "";
     for (int ligne = 0; ligne < 8; ligne++) {
@@ -157,6 +163,7 @@ string write_fen(string fopen, Plateau P){
 
 }
 
+/* lit la représentation FEN d'un plateau */
 void read_FEN(const string& fopen, Plateau* P){
     ifstream fic(fopen.c_str());
     if (fic) {

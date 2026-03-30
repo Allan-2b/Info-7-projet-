@@ -7,6 +7,9 @@
 using namespace std;
 
 //représentation REP2
+
+
+/* vide le plateau */
 void empty(Plateau* P) { 
     for(int i = 0; i < 64; i++){
         P->Tab[i].coordonee = i;
@@ -14,15 +17,18 @@ void empty(Plateau* P) {
     }
 }
 
+/* retourne le contenu d'une case */
 Case get_square(Plateau P, Case c){
     Case contenu = P.Tab[c.coordonee];
     return contenu;
 }
 
+/* définit le contenu d'une case */
 void set_square(Plateau* P, Case c, pieces_type pi){
     P->Tab[c.coordonee].contenu = pi;
 }
 
+/* initialise le plateau avec les pièces en position de départ */
 void start(Plateau* P){
     empty(P);
     for(int i = 0; i < 64; i++){
@@ -66,9 +72,15 @@ void start(Plateau* P){
 }
 }
 
+/* déplace une pièce d'une case à une autre (on échange simplement pour l'instant, manger_piece non defini) */
 void move_piece(Plateau* P, Case c1, Case c2){
     pieces_type pi = get_square(*P,c1).contenu;
     pieces_type pi2 = get_square(*P,c2).contenu;
+    /*
+    if (pi2 != Vide) {
+        manger_piece(P, c2);
+    }
+    */
     set_square(P,c2,pi);
     set_square(P,c1,pi2);
 }
