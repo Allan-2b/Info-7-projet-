@@ -95,9 +95,11 @@ void highlights_possible_moves(Plateau P, Masque* M, Case c){
     if (c.contenu == NB or c.contenu == NW) {
         highlights_possible_moves_knight(P, M, c);
     }
+        */
     if (c.contenu == BB or c.contenu == BW) {
         highlights_possible_moves_bishop(P, M, c);
     }
+        /*
     if (c.contenu == QB or c.contenu == QW) {
         highlights_possible_moves_queen(P, M, c);
     }
@@ -131,17 +133,19 @@ void highlights_possible_moves_rook(Plateau P, Masque* M, Case c){
     for (int i = 1; i < 8; i++) {
 
         /*HAUT*/
+        /*On vérifie que la case est bien dans le plateau et que l'on n'a pas déjà rencontré une pièce dans cette direction*/
         if (c.coordonee + haut * i >= 0 and !stop_haut) {
             int idx = c.coordonee + haut * i;
             pieces_type piece = P.Tab[idx].contenu;
-
+            /*Si la case est vide on met en bleu*/
             if (piece == Vide) {
                 set_mask(M, {idx}, 1);
             }
+            /*Si pièce adverse on met en rouge*/
             else {
 
                 if (piece % 2 != c.contenu % 2) {
-                    set_mask(M, {idx}, 1);
+                    set_mask(M, {idx}, 2);
                 }
                 stop_haut = true;
 
@@ -149,48 +153,54 @@ void highlights_possible_moves_rook(Plateau P, Masque* M, Case c){
         }
 
         /*BAS*/
+        /*On vérifie que la case est bien dans le plateau et que l'on n'a pas déjà rencontré une pièce dans cette direction*/
         if (c.coordonee + bas * i < 64 and !stop_bas) {
             int idx = c.coordonee + bas * i;
             pieces_type piece = P.Tab[idx].contenu;
-
+            /*Si la case est vide on met en bleu*/
             if (piece == Vide) {
                 set_mask(M, {idx}, 1);
             }
+            /*Si pièce adverse on met en rouge*/
             else {
                 if (piece % 2 != c.contenu % 2) {
-                    set_mask(M, {idx}, 1);
+                    set_mask(M, {idx}, 2);
                 }
                 stop_bas = true;
             }
         }
 
         /*GAUCHE*/
+        /*On vérifie que la case est bien dans le plateau et que l'on n'a pas déjà rencontré une pièce dans cette direction*/
         if (c.coordonee % 8 + gauche * i >= 0 and !stop_gauche) {
             int idx = c.coordonee + gauche * i;
             pieces_type piece = P.Tab[idx].contenu;
-
+            /*Si la case est vide on met en bleu*/
             if (piece == Vide) {
                 set_mask(M, {idx}, 1);
             }
+            /*Si pièce adverse on met en rouge*/
             else {
                 if (piece % 2 != c.contenu % 2) {
-                    set_mask(M, {idx}, 1);
+                    set_mask(M, {idx}, 2);
                 }
                 stop_gauche = true;
             }
         }
 
         /*DROITE*/
+        /*On vérifie que la case est bien dans le plateau et que l'on n'a pas déjà rencontré une pièce dans cette direction*/
         if (c.coordonee % 8 + droite * i < 8 and !stop_droite) {
             int idx = c.coordonee + droite * i;
             pieces_type piece = P.Tab[idx].contenu;
-
+            /*Si la case est vide on met en bleu*/
             if (piece == Vide) {
                 set_mask(M, {idx}, 1);
             }
+            /*Si pièce adverse on met en rouge*/
             else {
                 if (piece % 2 != c.contenu % 2) {
-                    set_mask(M, {idx}, 1);
+                    set_mask(M, {idx}, 2);
                 }
                 stop_droite = true;
             }

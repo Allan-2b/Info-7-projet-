@@ -32,8 +32,8 @@ int main(){
     start(&P);
     P.Tab[40].contenu = RW;
     P.Tab[32].contenu = KB;
-    P.Tab[24].contenu = BB;
-    for(int i = 0; i < 64; i++){
+    P.Tab[24].contenu = BW;
+    for (int i = 0; i < 64; i++) {
         P.Tab[i].coordonee = i;
     }
 
