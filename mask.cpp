@@ -198,7 +198,7 @@ void highlights_possible_moves_rook(Plateau P, Masque* M, Case c){
     }
 }
 
-
+/* Affiche le masque des mouvements possibles pour un roi */
 void highlights_possible_moves_king(Plateau P, Masque *M, Case c){
     // On colore la case 
     set_mask(M, c, 5);
@@ -263,8 +263,7 @@ void highlights_possible_moves_king(Plateau P, Masque *M, Case c){
     }
 }
 
-
-
+/* Affiche le masque des mouvements possibles pour un fou */
 void highlights_possible_moves_bishop(Plateau P, Masque *M, Case c){
     // On colore le fou lui-même en violet 
     set_mask(M, c, 5);
