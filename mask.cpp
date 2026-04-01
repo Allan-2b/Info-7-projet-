@@ -908,21 +908,27 @@ void mask_choice(Plateau P, Masque *M,int N,int choix){ // 0 pour blanc et 1 pou
 }
 
 void mask_choices_menu(Plateau P, Masque *M, int N){ // 0 pour blanc et 1 pour noir
-    bool quit = false ;
-    cout<<"Choisissez une option de masque : "<<endl;
-    cout<<"0. quitter"<<endl;
-    cout<<"1. Afficher les pièces qui peuvent être déplacées"<<endl;
-    cout<<"2. Afficher les pièces qui peuvent être attaquées"<<endl;
-    cout<<"3. Afficher les mouvements possibles pour une pièce spécifique"<<endl;
-    cout<<"4. Afficher les pièces attaquées et non attaquées"<<endl;
-    int choix;
-    cin >> choix;
-    while((choix >= 0 and choix <= 4) and quit == false){
-        if (choix == 0){
+    bool quit = false;
+    while(!quit){
+        cout<<"Choisissez une option de masque : "<<endl;
+        cout<<"0. quitter"<<endl;
+        cout<<"1. Afficher les pièces qui peuvent être déplacées"<<endl;
+        cout<<"2. Afficher les pièces qui peuvent être attaquées"<<endl;
+        cout<<"3. Afficher les mouvements possibles pour une pièce spécifique"<<endl;
+        cout<<"4. Afficher les pièces attaquées et non attaquées"<<endl;
+
+        int choix;
+        cin >> choix;
+
+        if(choix == 0){
             quit = true;
         }
-        if(!quit){
+        else if(choix >= 1 and choix <= 4){
+            clear_mask(M);
             mask_choice(P, M, N, choix);
+        }
+        else {
+            cout << "Option invalide." << endl;
         }
     }
 
