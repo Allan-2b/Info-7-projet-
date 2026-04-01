@@ -141,7 +141,7 @@ void highlights_possible_moves_rook(Plateau P, Masque* M, Case c){
             else {
 
                 if (piece % 2 != c.contenu % 2) {
-                    set_mask(M, {idx}, 2);
+                    set_mask(M, {idx}, 1);
                 }
                 stop_haut = true;
 
@@ -158,7 +158,7 @@ void highlights_possible_moves_rook(Plateau P, Masque* M, Case c){
             }
             else {
                 if (piece % 2 != c.contenu % 2) {
-                    set_mask(M, {idx}, 2);
+                    set_mask(M, {idx}, 1);
                 }
                 stop_bas = true;
             }
@@ -174,7 +174,7 @@ void highlights_possible_moves_rook(Plateau P, Masque* M, Case c){
             }
             else {
                 if (piece % 2 != c.contenu % 2) {
-                    set_mask(M, {idx}, 2);
+                    set_mask(M, {idx}, 1);
                 }
                 stop_gauche = true;
             }
@@ -190,7 +190,7 @@ void highlights_possible_moves_rook(Plateau P, Masque* M, Case c){
             }
             else {
                 if (piece % 2 != c.contenu % 2) {
-                    set_mask(M, {idx}, 2);
+                    set_mask(M, {idx}, 1);
                 }
                 stop_droite = true;
             }
@@ -199,107 +199,178 @@ void highlights_possible_moves_rook(Plateau P, Masque* M, Case c){
 }
 
 
+void highlights_possible_moves_king(Plateau P, Masque *M, Case c){
+    // On colore la case 
+    set_mask(M, c, 5);
 
-void highlights_possible_moves_king(Plateau P,Masque *M,Case c){
-    set_mask(M,c,2);
+    // variables pour les différentes directions
     int gauche = -1;
     int droite = 1;
     int haut = -8;
     int bas = 8;
-    int diagonale_haut_droit = -9;
-    int diagonale_haut_gauche = -7;
+    int diagonale_haut_droit = -7;
+    int diagonale_haut_gauche = -9;
     int diagonale_bas_droit = 9;
     int diagonale_bas_gauche = 7;
-    bool stop_gauche = false;
-    bool stop_droite = false;
-    bool stop_haut = false;
-    bool stop_bas = false;
-    bool stop_diagonale_haut_droit = false;
-    bool stop_diagonale_haut_gauche = false;
-    bool stop_diagonale_bas_droit = false;
-    bool stop_diagonale_bas_gauche = false;
-    for(int i=0;i<8;i++){
-        /*HAUT*/
-        if (c.coordonee + haut >= 0 and !stop_haut) {
-            int idx = c.coordonee + haut;
-            pieces_type piece = P.Tab[idx].contenu;
 
-            if (piece == Vide) {
-                set_mask(M, {idx}, 1);
-            }
-            else {
-                if (piece % 2 != c.contenu % 2) {
-                    set_mask(M, {idx}, 2);
-                }
-                stop_haut = true;
-            }
+    // On met toutes les directions dans un tableau pour pouvoir boucler facilement
+    int directions[8] = {gauche, droite, haut, bas, 
+                         diagonale_haut_droit, diagonale_haut_gauche, 
+                         diagonale_bas_droit, diagonale_bas_gauche};
+
+    int colonne = c.coordonee % 8;   // numéro de la colonne (0=a ... 7=h)
+
+    for(int i = 0; i < 8; i++){
+        int new_coord = c.coordonee + directions[i];
+
+        // On reste bien dans le plateau (cases 0 à 63)
+        if(new_coord < 0 or new_coord >= 64){
+            continue;
         }
 
-        /*BAS*/
-        if (c.coordonee + bas < 64 and !stop_bas) {
-            int idx = c.coordonee + bas;
-            pieces_type piece = P.Tab[idx].contenu;
+        // On interdit les mouvements qui "tournent" sur le bord (ex: de a vers h)
+        bool interdit = false;
 
+        if(directions[i] == gauche and colonne == 0) interdit = true;
+        if(directions[i] == droite and colonne == 7) interdit = true;
 
-            if (piece == Vide) {
-                set_mask(M, {idx}, 1);
-            }
-            else {
-                if (piece % 2 != c.contenu % 2) {
-                    set_mask(M, {idx}, 2);
-                }
-                stop_bas = true;
-            }
+        if(directions[i] == diagonale_haut_gauche and (colonne == 0 or c.coordonee < 8)) interdit = true;
+        if(directions[i] == diagonale_haut_droit  and (colonne == 7 or c.coordonee < 8)) interdit = true;
+
+        if(directions[i] == diagonale_bas_gauche  and (colonne == 0 or c.coordonee >= 56)) interdit = true;
+        if(directions[i] == diagonale_bas_droit   and (colonne == 7 or c.coordonee >= 56)) interdit = true;
+
+        if(interdit){
+            continue;
         }
 
-        /*GAUCHE*/ 
-        if (c.coordonee % 8 + gauche >= 0 and !stop_gauche) {
-            int idx = c.coordonee + gauche;
-            pieces_type piece = P.Tab[idx].contenu;
+        Case nouvelle_case = P.Tab[new_coord];
 
-            if (piece == Vide) {
-                set_mask(M, {idx}, 1);
-            }
-            else {
-                if (piece % 2 != c.contenu % 2) {
-                    set_mask(M, {idx}, 2);
-                }
-                stop_gauche = true;
-            }
+        // Case vide  on met la valeur 1 (bleu foncé)
+        if(nouvelle_case.contenu == Vide){
+            set_mask(M, nouvelle_case, 1);
         }
-
-        /*DROITE*/
-        if (c.coordonee % 8 + droite < 8 and !stop_droite) {
-            int idx = c.coordonee + droite;
-            pieces_type piece = P.Tab[idx].contenu;
-
-            if (piece == Vide) {
-                set_mask(M, {idx}, 1);
-            }
-            else {
-                if (piece % 2 != c.contenu % 2) {
-                    set_mask(M, {idx}, 2);
-                }
-                stop_droite = true;
-            }
+        // Pièce adverse on met la valeur 2 (rouge)
+        else if( (c.contenu == KW and (nouvelle_case.contenu == PB or nouvelle_case.contenu == NB or
+                                      nouvelle_case.contenu == BB or nouvelle_case.contenu == QB or
+                                      nouvelle_case.contenu == RB or nouvelle_case.contenu == KB)) or
+                 (c.contenu == KB and (nouvelle_case.contenu == PW or nouvelle_case.contenu == NW or
+                                      nouvelle_case.contenu == BW or nouvelle_case.contenu == QW or
+                                      nouvelle_case.contenu == RW or nouvelle_case.contenu == KW)) ){
+            set_mask(M, nouvelle_case, 2);
         }
+        // Si c’est une pièce de la même couleur → on ne fait rien
+    }
+}
 
-        /*DIAGONALE HAUT DROIT*/
-        if (c.coordonee % 8 + droite < 8 and c.coordonee + haut >= 0 and !stop_diagonale_haut_droit) {
-            int idx = c.coordonee + diagonale_haut_droit;
-            pieces_type piece = P.Tab[idx].contenu;
 
-            if (piece == Vide) {
-                set_mask(M, {idx}, 1);
-            }
-            else {
-                if (piece % 2 != c.contenu % 2) {
-                    set_mask(M, {idx}, 2);
-                }
-                stop_diagonale_haut_droit = true;
-            }
+
+void highlights_possible_moves_bishop(Plateau P, Masque *M, Case c){
+    // On colore le fou lui-même en violet 
+    set_mask(M, c, 5);
+
+    // Les 4 directions diagonales du fou
+    int diagonale_haut_gauche = -9;
+    int diagonale_haut_droit  = -7;
+    int diagonale_bas_gauche  = 7;
+    int diagonale_bas_droit   = 9;
+
+    int col = c.coordonee % 8;   // numéro de colonne du fou (0=a, 7=h)
+
+    //  Diagonale Haut-Gauche 
+    int pos = c.coordonee + diagonale_haut_gauche;
+    while(pos >= 0 and pos < 64){
+        if(pos % 8 >= col + 1) break;   // on a traversé le bord 
+
+        Case nouvelle_case = P.Tab[pos];
+
+        if(nouvelle_case.contenu == Vide){
+            set_mask(M, nouvelle_case, 1);   // bleu = case vide
         }
+        else {
+            // Pièce adverse ?
+            if( (c.contenu == BW and (nouvelle_case.contenu == PB or nouvelle_case.contenu == NB or
+                                    nouvelle_case.contenu == BB or nouvelle_case.contenu == QB or
+                                    nouvelle_case.contenu == RB or nouvelle_case.contenu == KB)) or
+                (c.contenu == BB and (nouvelle_case.contenu == PW or nouvelle_case.contenu == NW or
+                                    nouvelle_case.contenu == BW or nouvelle_case.contenu == QW or
+                                    nouvelle_case.contenu == RW or nouvelle_case.contenu == KW)) ){
+                set_mask(M, nouvelle_case, 2);   // rouge = capture
+            }
+            break;   // on s'arrête sur une pièce (même couleur ou adverse)
+        }
+        pos += diagonale_haut_gauche;   // on continue plus loin
+    }
 
+    // Diagonale Haut-Droite 
+    pos = c.coordonee + diagonale_haut_droit;
+    while(pos >= 0 and pos < 64){
+        if(pos % 8 <= col - 1) break;
 
+        Case nouvelle_case = P.Tab[pos];
+
+        if(nouvelle_case.contenu == Vide){
+            set_mask(M, nouvelle_case, 1);
+        }
+        else {
+            if( (c.contenu == BW and (nouvelle_case.contenu == PB or nouvelle_case.contenu == NB or
+                                    nouvelle_case.contenu == BB or nouvelle_case.contenu == QB or
+                                    nouvelle_case.contenu == RB or nouvelle_case.contenu == KB)) or
+                (c.contenu == BB and (nouvelle_case.contenu == PW or nouvelle_case.contenu == NW or
+                                    nouvelle_case.contenu == BW or nouvelle_case.contenu == QW or
+                                    nouvelle_case.contenu == RW or nouvelle_case.contenu == KW)) ){
+                set_mask(M, nouvelle_case, 2);
+            }
+            break;
+        }
+        pos += diagonale_haut_droit;
+    }
+
+    // Diagonale Bas-Gauche 
+    pos = c.coordonee + diagonale_bas_gauche;
+    while(pos >= 0 and pos < 64){
+        if(pos % 8 >= col + 1) break;
+
+        Case nouvelle_case = P.Tab[pos];
+
+        if(nouvelle_case.contenu == Vide){
+            set_mask(M, nouvelle_case, 1);
+        }
+        else {
+            if( (c.contenu == BW and (nouvelle_case.contenu == PB or nouvelle_case.contenu == NB or
+                                    nouvelle_case.contenu == BB or nouvelle_case.contenu == QB or
+                                    nouvelle_case.contenu == RB or nouvelle_case.contenu == KB)) or
+                (c.contenu == BB and (nouvelle_case.contenu == PW or nouvelle_case.contenu == NW or
+                                    nouvelle_case.contenu == BW or nouvelle_case.contenu == QW or
+                                    nouvelle_case.contenu == RW or nouvelle_case.contenu == KW)) ){
+                set_mask(M, nouvelle_case, 2);
+            }
+            break;
+        }
+        pos += diagonale_bas_gauche;
+    }
+
+    //. Diagonale Bas-Droite
+    pos = c.coordonee + diagonale_bas_droit;
+    while(pos >= 0 and pos < 64){
+        if(pos % 8 <= col - 1) break;
+
+        Case nouvelle_case = P.Tab[pos];
+
+        if(nouvelle_case.contenu == Vide){
+            set_mask(M, nouvelle_case, 1);
+        }
+        else {
+            if( (c.contenu == BW and (nouvelle_case.contenu == PB or nouvelle_case.contenu == NB or
+                                    nouvelle_case.contenu == BB or nouvelle_case.contenu == QB or
+                                    nouvelle_case.contenu == RB or nouvelle_case.contenu == KB)) or
+                (c.contenu == BB and (nouvelle_case.contenu == PW or nouvelle_case.contenu == NW or
+                                    nouvelle_case.contenu == BW or nouvelle_case.contenu == QW or
+                                    nouvelle_case.contenu == RW or nouvelle_case.contenu == KW)) ){
+                set_mask(M, nouvelle_case, 2);
+            }
+            break;
+        }
+        pos += diagonale_bas_droit;
     }
 }
