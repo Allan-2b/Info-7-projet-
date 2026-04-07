@@ -892,7 +892,7 @@ void mask_choice(Plateau P, Masque *M,int N,int choix){ // 0 pour blanc et 1 pou
     }
     else if(choix == 3){
         print_board(P);
-        cout<<"<Entrez la coordonnée de la pièce à déplacer (ex: e2) : ";
+        cout<<"<De quelle pièce voulez vous connaitre les mouvements possibles (ex: e2) : ";
         string coord;
         cin>>coord;
         int col = coord[0] - 'a';

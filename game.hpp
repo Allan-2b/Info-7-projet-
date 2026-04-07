@@ -9,9 +9,9 @@
 void one_run(game *G);
 void one_run_human(game *G, int *mouvement_humain);
 void one_run_computer(game *G);
-int choose_movement_human(game *G);
-int choose_movement_computer(game *G);
+void choose_movement_human(game *G, int couleur_joueur, int *choix_joueur);
+void choose_movement_computer(game *G, int *mouvement_computer, int couleur_joueur);
 void run(game *G);
-bool test_run(Plateau P, Masque M, int couleur_joueur);
+bool test_run(Plateau P, int index, int index1);
 
 #endif 

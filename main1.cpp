@@ -1,6 +1,4 @@
 #include <iostream>
-#include <cstdio>
-#include <cstdlib>
 
 
 
@@ -25,18 +23,9 @@ int main(){
     SetConsoleOutputCP(65001); 
     #endif
     
-    /* Test des pieces attaquees */
     game G;
+    empty_mask(&G.M);
     run(&G);
-
-
-
-
-    FILE *fichier = fopen("test.csv", "w");
-    fprintf(fichier, "test");
-    fclose(fichier);
-
-    cout << endl;
     
     return 0;
 }
