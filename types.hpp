@@ -19,4 +19,12 @@ struct Masque{
     int Tab[64];
 };
 
+
+struct game{
+    Plateau P;
+    Masque M;
+    int prise[32];
+    int couleur_joueur; //0 blanc 1 noir
+};
+
 #endif

@@ -72,15 +72,20 @@ void start(Plateau* P){
 }
 }
 
+
+/*supprime le contenu d'une case mangée*/
+void manger_piece(Plateau* P, Case c){
+    set_square(P, c, Vide);
+}
+
 /* déplace une pièce d'une case à une autre (on échange simplement pour l'instant, manger_piece non defini) */
 void move_piece(Plateau* P, Case c1, Case c2){
-    pieces_type pi = get_square(*P,c1).contenu;
-    pieces_type pi2 = get_square(*P,c2).contenu;
-    /*
-    if (pi2 != Vide) {
+    pieces_type pi = get_square(*P,c1).contenu; //case de départ
+    pieces_type pi2 = get_square(*P,c2).contenu; //case d'arrivée
+    if (pi2 != Vide) { //si la case d'arrivée n'est pas vide, on mange la pièce qui s'y trouve
         manger_piece(P, c2);
     }
-    */
+    pi2 = get_square(*P,c2).contenu; //on vérifie que la pièce a bien été mangée
     set_square(P,c2,pi);
     set_square(P,c1,pi2);
 }

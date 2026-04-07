@@ -1,5 +1,5 @@
-echecs: main1.o board.o mask.o view.o
-	g++ main1.o board.o mask.o view.o -o echecs
+echecs: main1.o board.o mask.o view.o game.o
+	g++ main1.o board.o mask.o view.o game.o -o echecs
 
 
 main1.o: main1.cpp
@@ -13,3 +13,7 @@ mask.o: mask.cpp
 
 view.o: view.cpp
 	g++ -c view.cpp
+
+
+game.o: game.cpp
+	g++ -c game.cpp

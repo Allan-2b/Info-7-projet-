@@ -13,6 +13,7 @@
 #include "types.hpp"
 #include "view.hpp"
 #include "mask.hpp"
+#include "game.hpp"
 
 
 using namespace std;
@@ -25,11 +26,9 @@ int main(){
     #endif
     
     /* Test des pieces attaquees */
-    Plateau P;
-    Masque Menu;
-    start(&P);
-    empty_mask(&Menu);
-    mask_choices_menu(P, &Menu, 0);
+    game G;
+    run(&G);
+
 
 
 
