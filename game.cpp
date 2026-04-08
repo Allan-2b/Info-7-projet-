@@ -33,6 +33,11 @@ void choose_movement_human(game *G,int couleur_joueur,int*choix_joueur){
     int row = 8 - (coord[1] - '0');
     int index = row * 8 + col;
     choix_joueur[0] = index;
+    if (G->P.Tab[choix_joueur[0]].contenu % 2 != couleur_joueur or G->P.Tab[choix_joueur[0]].contenu == Vide){
+        cout<<"Veuillez choisir une pièce de votre couleur."<<endl;
+        choose_movement_human(G,couleur_joueur,choix_joueur);
+        return;
+    }
     highlights_possible_moves(G->P, &G->M, G->P.Tab[index]);
     print_board(G->P, G->M);
     cout<<"Entrez la coordonnée de la case de destination (ex: e4) : ";

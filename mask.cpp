@@ -655,7 +655,7 @@ void highlights_possible_moves_knight(Plateau P, Masque *M, Case c){
 
     // Haut Gauche
     int new_coord = c.coordonee + deplacement_Haut_Gauche;
-    if (new_coord >= 0 and new_coord < 64 and colonne > 1) {
+    if (new_coord >= 0 and new_coord < 64 and colonne >= 1) {
         pieces_type piece = P.Tab[new_coord].contenu;
         if (piece == Vide) {
             set_mask(M, P.Tab[new_coord], 1);
@@ -668,7 +668,7 @@ void highlights_possible_moves_knight(Plateau P, Masque *M, Case c){
 
     // Haut Droit
     new_coord = c.coordonee + deplacement_Haut_Droit;
-    if (new_coord >= 0 and new_coord < 64 and colonne < 6) {
+    if (new_coord >= 0 and new_coord < 64 and colonne <= 6) {
         pieces_type piece = P.Tab[new_coord].contenu;
         if (piece == Vide) {
             set_mask(M, P.Tab[new_coord], 1);
