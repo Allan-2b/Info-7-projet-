@@ -37,20 +37,25 @@ void play_historique(game* G,historique** histo){
 }
 
 
-/* reviens en arrière dans l'historique */
+/* reviens en arrière dans l'historique 1 = 2 coups en arrière */
 bool backtrack_historique(game *G, int etape){
     for (int i = 0; i < etape; i++) {
         if (G->hist == NULL) {
             cout << "Pas assez d'historique" << endl;
             return false;
         }
-        historique* temp = G->hist;
-        G->hist = G->hist->suivant; /* on retire le dernier historique de la liste */
-        move_piece(&G->P, G->P.Tab[temp->coord_arrivee], G->P.Tab[temp->coord_depart]); /* on annule le dernier mouvement */
-        G->P.Tab[temp->coord_arrivee].contenu = temp->piece_prise; /* on remet la pièce prise si il y en a une */
-        G->P.Tab[temp->coord_depart].contenu = temp->piece_deplacee; /* on remet la pièce déplacée */
-        delete temp; /* on libère la mémoire de l'historique annulé */
-
+        for (int j = 0; j < 2; j++) { // 2 coups en arrière
+            if (G->hist == NULL) {
+                cout << "Pas assez d'historique" << endl;
+                return false;
+            }
+            historique* temp = G->hist;
+            G->hist = G->hist->suivant; /* on retire le dernier historique de la liste */
+            move_piece(&G->P, G->P.Tab[temp->coord_arrivee], G->P.Tab[temp->coord_depart]); /* on annule le dernier mouvement */
+            G->P.Tab[temp->coord_arrivee].contenu = temp->piece_prise; /* on remet la pièce prise si il y en a une */
+            G->P.Tab[temp->coord_depart].contenu = temp->piece_deplacee; /* on remet la pièce déplacée */
+            delete temp; /* on libère la mémoire de l'historique annulé */
+        }       
     }
     print_board(G->P);
     return true;

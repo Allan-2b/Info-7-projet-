@@ -147,11 +147,23 @@ void one_run(game *G){
 void run(game *G){
     start(&G->P);
     print_board(G->P);
-    G->M = Masque();
+    Masque M1;
+    empty_mask(&M1);
+    G->M = M1;
     G->hist = nullptr;
 
     for (int i = 0; i < 32; i++){
         G->prise[i] = 0;
+    }
+    cout << "Voulez vous reprendre une partie sauvegardée ? (1 pour oui, 0 pour non) : ";
+    int save_choice;
+    cin >> save_choice;
+    if (save_choice == 1) {
+        string fen;
+        cout << "Entrez le nom du fichier de sauvegarde (ex: sauvegarde.txt) : ";
+        cin >> fen;
+        read_FEN(fen, &G->P);
+        print_board(G->P);
     }
     cout << "Choisissez votre couleur (0 pour blanc, 1 pour noir) : ";
     cin >> G->couleur_joueur;
@@ -161,8 +173,16 @@ void run(game *G){
         cout << "Voulez-vous continuer à jouer ? (1 pour oui, 0 pour non) : "<< endl;
         cin >> choix;
         if (choix == 0) {
-            choix = true;
-            break; 
+            cout << "voulez vous sauvegarder la partie ? (1 pour oui, 0 pour non) : ";
+            int save_choice;
+            cin >> save_choice;
+            if (save_choice == 1) {
+                string fen;
+                cout << "Entrez le nom du fichier de sauvegarde (ex: sauvegarde.txt) : ";
+                cin >> fen;
+                write_fen(fen, G->P);
+                return;
+            }
         }
         else {
             choix = false;
@@ -170,15 +190,19 @@ void run(game *G){
         cout << "voulez vous revenir en arrière ? (1 pour oui, 0 pour non) : ";
         int backtrack_choice;
         cin >> backtrack_choice;
-        cout << "de combien de coups voulez vous revenir en arrière ? (0 pour non) : ";
-        int backtrack_steps;
-        cin >> backtrack_steps;
-        if (backtrack_choice == 1 and backtrack_steps > 0) {
-            backtrack_historique(G, backtrack_steps);
-
+        if (backtrack_choice == 1) {
+             cout << "de combien de coups voulez vous revenir en arrière ? (0 pour non) : ";
+             int backtrack_steps;
+             cin >> backtrack_steps;
+             if (backtrack_steps > 0) {
+                 backtrack_historique(G, backtrack_steps);
+             }
+             else{
+                 cout << "continuation du jeu." << endl;
+             }
         }
-        else{
-            cout << "valeur invalide, continuation du jeu." << endl;
+        else {
+            cout << "continuation du jeu." << endl;
         }
 
         one_run(G);
