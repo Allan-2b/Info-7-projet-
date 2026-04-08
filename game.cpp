@@ -3,6 +3,7 @@
 #include "board.hpp"
 #include "types.hpp"
 #include "view.hpp"
+#include "historique.hpp"
 #include <iostream>
 #include <random>
 using namespace std;
@@ -25,7 +26,6 @@ void choose_movement_human(game *G,int couleur_joueur,int*choix_joueur){
     
     empty_mask(&G->M);
     G->couleur_joueur = couleur_joueur;
-    print_board(G->P);
     cout<<"Entrez la coordonnée de la pièce à déplacer (ex: e2) : ";
     string coord;
     cin>>coord;
@@ -108,7 +108,7 @@ void one_run_human(game *G, int *mouvement_humain){
     if (piece_arrivee != Vide){
         G->prise[piece_arrivee]++; /* on ajoute la piece prise dans le tableau de prise */
     }
-
+    MAJ_historique(G, mouvement_humain[0], mouvement_humain[1], G->P.Tab[mouvement_humain[1]].contenu, piece_arrivee); /* on met à jour l'historique du jeu */
     print_board(G->P);
 }
 
@@ -123,6 +123,7 @@ void one_run_computer(game *G){
     if (piece_arrivee != Vide){
         G->prise[piece_arrivee]++; /* on ajoute la piece prise dans le tableau de prise */
     }
+    MAJ_historique(G, Tab[0], Tab[1], G->P.Tab[Tab[1]].contenu, piece_arrivee); /* on met à jour l'historique du jeu */
     print_board(G->P);
 }
 
@@ -137,6 +138,9 @@ void one_run(game *G){
         one_run_computer(G);
         one_run_human(G, NULL);
     }
+    
+
+    
 }
 
 /* lance le jeu */
@@ -144,6 +148,7 @@ void run(game *G){
     start(&G->P);
     print_board(G->P);
     G->M = Masque();
+    G->hist = nullptr;
 
     for (int i = 0; i < 32; i++){
         G->prise[i] = 0;
@@ -153,7 +158,7 @@ void run(game *G){
     int compteur = 0; //50 coup maximum
     bool choix = false;
     while(choix != true and compteur < 50){
-        cout << "Voulez-vous continuer à jouer ? (1 pour oui, 0 pour non) : ";
+        cout << "Voulez-vous continuer à jouer ? (1 pour oui, 0 pour non) : "<< endl;
         cin >> choix;
         if (choix == 0) {
             choix = true;
@@ -162,6 +167,20 @@ void run(game *G){
         else {
             choix = false;
         }
+        cout << "voulez vous revenir en arrière ? (1 pour oui, 0 pour non) : ";
+        int backtrack_choice;
+        cin >> backtrack_choice;
+        cout << "de combien de coups voulez vous revenir en arrière ? (0 pour non) : ";
+        int backtrack_steps;
+        cin >> backtrack_steps;
+        if (backtrack_choice == 1 and backtrack_steps > 0) {
+            backtrack_historique(G, backtrack_steps);
+
+        }
+        else{
+            cout << "valeur invalide, continuation du jeu." << endl;
+        }
+
         one_run(G);
         compteur++;
     }

@@ -231,3 +231,5 @@ void read_FEN(const string& fopen, Plateau* P){
     }
 
 }
+
+

@@ -19,12 +19,23 @@ struct Masque{
     int Tab[64];
 };
 
+struct historique{
+    int coord_depart;
+    int coord_arrivee;
+    pieces_type piece_deplacee;
+    pieces_type piece_prise;
+    historique* suivant;
+
+};
 
 struct game{
     Plateau P;
     Masque M;
     int prise[32];
     int couleur_joueur; //0 blanc 1 noir
+    historique* hist;
 };
+
+
 
 #endif

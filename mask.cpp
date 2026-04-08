@@ -1,6 +1,7 @@
 #include "mask.hpp"
 #include "view.hpp"
 #include "board.hpp"
+#include "game.hpp"
 #include <iostream>
 using namespace std;
 
@@ -916,6 +917,7 @@ void mask_choices_menu(Plateau P, Masque *M, int N){ // 0 pour blanc et 1 pour n
         cout<<"2. Afficher les pièces qui peuvent être attaquées"<<endl;
         cout<<"3. Afficher les mouvements possibles pour une pièce spécifique"<<endl;
         cout<<"4. Afficher les pièces attaquées et non attaquées"<<endl;
+        cout<<"Votre choix : ";
 
         int choix;
         cin >> choix;

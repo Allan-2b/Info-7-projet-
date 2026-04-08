@@ -1,5 +1,5 @@
-echecs: main1.o board.o mask.o view.o game.o
-	g++ main1.o board.o mask.o view.o game.o -o echecs
+echecs: main1.o board.o mask.o view.o game.o historique.o
+	g++ main1.o board.o mask.o view.o game.o historique.o -o echecs
 
 
 main1.o: main1.cpp
@@ -17,3 +17,6 @@ view.o: view.cpp
 
 game.o: game.cpp
 	g++ -c game.cpp
+
+historique.o: historique.cpp
+	g++ -c historique.cpp
