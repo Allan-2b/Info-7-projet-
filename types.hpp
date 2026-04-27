@@ -25,6 +25,7 @@ struct historique{
     pieces_type piece_deplacee;
     pieces_type piece_prise;
     historique* suivant;
+    
 
 };
 
@@ -34,6 +35,7 @@ struct game{
     int prise[32];
     int couleur_joueur; //0 blanc 1 noir
     historique* hist;
+    int score[2]; //score[0] score blanc score[1] score noir
 };
 
 
