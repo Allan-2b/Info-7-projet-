@@ -64,70 +64,61 @@ void compute_score(game *G){
 
 
 bool est_nulle(game G){
+    /*condition 2 : matériel insuffisant pour mater*/
+    int pieces_non_roi_blanches = 0;
+    int pieces_non_roi_noires = 0;
+
+    for(int i = 0; i < 64; i++){
+        pieces_type piece = G.P.Tab[i].contenu;
+
+        if(piece == Vide or piece == KW or piece == KB){
+            continue;
+        }
+
+        if(piece == PB or piece == PW or piece == RB or piece == RW or piece == QB or piece == QW){
+            return false;
+        }
+
+        if(piece % 2 == 0){
+            pieces_non_roi_blanches++;
+        }
+        else{
+            pieces_non_roi_noires++;
+        }
+    }
+
+    if (pieces_non_roi_blanches <= 1 and pieces_non_roi_noires <= 1){
+        return true;
+    }
+
     /*condition 1 : il n'y a plus de mouvements possibles pour le joueur courant et son roi n'est pas en échec*/
     if (king_in_check(G.P, 0) == false and king_in_check(G.P, 1) == false){
         Masque M;
         empty_mask(&M);
+        bool mouvement_possible = false;
+
         highlights_attacked_pieces(G.P, &M, &M, 0);
         for(int i = 0; i < 64; i++){
             if(G.P.Tab[i].contenu % 2 == 0 and G.P.Tab[i].contenu != Vide){ /* seulement pieces blanches */
                 if(can_move(G.P, G.P.Tab[i]) == true){
-                    return false;
+                    mouvement_possible = true;
                 }
             }
         }
-        highlights_attacked_pieces(G.P, &M, &M, 1);
-        for(int i = 0; i < 64; i++){
-            if(G.P.Tab[i].contenu % 2 == 1 and G.P.Tab[i].contenu != Vide){ /* seulement pieces noires */
-                if(can_move(G.P, G.P.Tab[i]) == true){
-                    return false;
+
+        if (mouvement_possible == false){
+            highlights_attacked_pieces(G.P, &M, &M, 1);
+            for(int i = 0; i < 64; i++){
+                if(G.P.Tab[i].contenu % 2 == 1 and G.P.Tab[i].contenu != Vide){ /* seulement pieces noires */
+                    if(can_move(G.P, G.P.Tab[i]) == true){
+                        mouvement_possible = true;
+                    }
                 }
             }
-        }
-        return true;
-    }
 
-    /*condition 2 : Les pièces présente sur le plateau ne permettent pas de mat*/
-    /*Roi contre Roi, Roi + Fou contre Roi, ou Roi + Cavalier contre Roi*/
-
-    /* pieces ou mat possibles */
-    /*roi contre roi*/
-    for (int i = 0; i < 64; i++){
-        if(G.P.Tab[i].contenu != PB and G.P.Tab[i].contenu != PW and G.P.Tab[i].contenu != RB and G.P.Tab[i].contenu != RW and G.P.Tab[i].contenu != QB and G.P.Tab[i].contenu != QW and G.P.Tab[i].contenu != BB and G.P.Tab[i].contenu != BW and G.P.Tab[i].contenu != NB and G.P.Tab[i].contenu != NW){
-            return true;
-        }
-    }
-
-    /* condition roi + fou vs roi ou roi + fou vs roi + fou*/
-    int nombre_fou_blanc = 0;
-    int nombre_fou_noir = 0;
-    for(int i = 0; i < 64; i++){
-        if(G.P.Tab[i].contenu == BB){
-            nombre_fou_noir++;
-        }
-        if(G.P.Tab[i].contenu == BW){
-            nombre_fou_blanc++;
-        }
-    }
-    for (int i = 0; i < 64; i++){
-        if (nombre_fou_blanc <= 1 and nombre_fou_noir <= 1 and G.P.Tab[i].contenu != PB and G.P.Tab[i].contenu != PW and G.P.Tab[i].contenu != RB and G.P.Tab[i].contenu != RW and G.P.Tab[i].contenu != QB and G.P.Tab[i].contenu != QW and G.P.Tab[i].contenu != NB and G.P.Tab[i].contenu != NW){
-            return true;
-        }
-    }
-    /* condition roi + cavalier vs roi ou roi + cavalier vs roi + cavalier*/
-    int nombre_cavalier_blanc = 0;
-    int nombre_cavalier_noir = 0;
-    for(int i = 0; i < 64; i++){
-        if(G.P.Tab[i].contenu == NB){
-            nombre_cavalier_noir++;
-        }
-        if(G.P.Tab[i].contenu == NW){
-            nombre_cavalier_blanc++;
-        }
-    }
-    for (int i = 0; i < 64; i++){
-        if (nombre_cavalier_blanc <= 1 and nombre_cavalier_noir <= 1 and G.P.Tab[i].contenu != PB and G.P.Tab[i].contenu != PW and G.P.Tab[i].contenu != RB and G.P.Tab[i].contenu != RW and G.P.Tab[i].contenu != QB and G.P.Tab[i].contenu != QW and G.P.Tab[i].contenu != BB and G.P.Tab[i].contenu != BW){
-            return true;
+            if (mouvement_possible == false){
+                return true;
+            }
         }
     }
 
@@ -150,13 +141,11 @@ bool est_nulle(game G){
     if (G.hist != NULL){
         historique* temp = G.hist;
         int coups_sans_pion_ou_capture = 0;
-        while (temp->suivant != NULL){
-            if (temp->piece_deplacee != NB and temp->piece_deplacee != NW){
-                coups_sans_pion_ou_capture = 0;
+        while (temp != NULL){
+            if (temp->piece_deplacee == PB or temp->piece_deplacee == PW or temp->piece_prise != Vide){
+                break;
             }
-            else{
-                coups_sans_pion_ou_capture++;
-            }
+            coups_sans_pion_ou_capture++;
             temp = temp->suivant;
         }
         if (coups_sans_pion_ou_capture >= 50){
@@ -365,6 +354,11 @@ void run(game *G){
         cin >> fen;
         read_FEN(fen, &G->P);
         print_board(G->P);
+
+        if (est_nulle(*G)){
+            cout << "Partie nulle" << endl;
+            return;
+        }
     }
 
     /*Choix de la couleur*/
@@ -417,6 +411,12 @@ void run(game *G){
         }
 
         one_run(G);
+
+        if (est_nulle(*G)){
+            cout << "Partie nulle" << endl;
+            return;
+        }
+
         compteur++;
     }
 }
