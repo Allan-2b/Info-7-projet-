@@ -11,55 +11,63 @@ using namespace std;
 
 /*Test si un mouvement est valide*/
 bool test_run(Plateau P,int index,int index1){
-    Masque M;
-    empty_mask(&M);
-    highlights_possible_moves(P, &M,P.Tab[index]);
-    if(M.Tab[index1] == 1 or M.Tab[index1] == 2)return true;
-    else{
+    if(index < 0 or index >= 64 or index1 < 0 or index1 >= 64) {
         return false;
     }
-    
+
+    if(P.Tab[index].contenu == Vide) {
+        return false;
+    }
+
+    if(P.Tab[index1].contenu == KW or P.Tab[index1].contenu == KB) {
+        return false;
+    }
+
+    Masque M;
+    empty_mask(&M);
+    highlights_possible_moves(P, &M, P.Tab[index]);
+
+    if(M.Tab[index1] == 1 or M.Tab[index1] == 2) return true;
+    return false;
 }
 
 void compute_score(game *G){
-    /*fonction qui calcule le score du joueur en fonction des pièces prises et de la position des pièces sur le plateau*/
-    G->score[0] = 39;
-    G->score[1] = 39;
+    /* fonction qui calcule le score du joueur en fonction des pièces encore présentes sur le plateau */
+    G->score[0] = 0;
+    G->score[1] = 0;
+
     for(int i = 0; i < 64; i++){
-        if(G->P.Tab[i].contenu != Vide){
-            if(G->P.Tab[i].contenu % 2 == 0){
-                if(G->P.Tab[i].contenu == PB){
-                    G->score[0] += -1;
-                }
-                else if(G->P.Tab[i].contenu == NB or G->P.Tab[i].contenu == BB){
-                    G->score[0] += -3;
-                }
-                else if(G->P.Tab[i].contenu == RB ){
-                    G->score[0] += -5;
-                }
-                else if(G->P.Tab[i].contenu == QB){
-                    G->score[0] += -9;
-                }  
-            }
-            else{
-                if(G->P.Tab[i].contenu % 2 == 0){
-                    if(G->P.Tab[i].contenu == PW){
-                        G->score[0] += -1;
-                    }
-                    else if(G->P.Tab[i].contenu == NW or G->P.Tab[i].contenu == BW){
-                        G->score[0] += -3;
-                    }
-                    else if(G->P.Tab[i].contenu == RW ){
-                        G->score[0] += -5;
-                    }
-                    else if(G->P.Tab[i].contenu == QW){
-                        G->score[0] += -9;
-                    }  
-                }
-            }
+        switch(G->P.Tab[i].contenu){
+            case PW:
+                G->score[0] += 1;
+                break;
+            case NW:
+            case BW:
+                G->score[0] += 3;
+                break;
+            case RW:
+                G->score[0] += 5;
+                break;
+            case QW:
+                G->score[0] += 9;
+                break;
+            case PB:
+                G->score[1] += 1;
+                break;
+            case NB:
+            case BB:
+                G->score[1] += 3;
+                break;
+            case RB:
+                G->score[1] += 5;
+                break;
+            case QB:
+                G->score[1] += 9;
+                break;
+            default:
+                break;
         }
     }
-
 }
 
 
@@ -188,6 +196,40 @@ bool king_in_check(Plateau P, int couleur_joueur){
     }
     return false;
 }
+
+
+bool king_in_checkmate(Plateau P, int couleur_joueur){
+    if (!king_in_check(P, couleur_joueur)) {
+        return false;
+    }
+
+    Masque M;
+    empty_mask(&M);
+
+    for (int i = 0; i < 64; i++) {
+        if (P.Tab[i].contenu == Vide) {
+            continue;
+        }
+        if (P.Tab[i].contenu % 2 != couleur_joueur) {
+            continue;
+        }
+
+        empty_mask(&M);
+        highlights_possible_moves(P, &M, P.Tab[i]);
+
+        for (int j = 0; j < 64; j++) {
+            if (M.Tab[j] == 1 or M.Tab[j] == 2) {
+                Plateau copy = test_coup(P, i, j);
+                if (!king_in_check(copy, couleur_joueur)) {
+                    return false;
+                }
+            }
+        }
+    }
+
+    return true;
+}
+
 
 
 /*Choisit le mouvement pour le joueur humain*/

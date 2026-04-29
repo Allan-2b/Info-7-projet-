@@ -1,20 +1,18 @@
-=====================================================================
-ANALYSE DU CODE - A7.2
-Projet Jeu d'Echecs - SAE L1 Info 2025-2026
-=====================================================================
 
----------------------------------------------------------------------
+ANALYSE DU CODE - A7.2
+Projet Jeu d'Echecs - INFO7 L1 Info 2025-2026
+
+
 A7.2.a : IDENTIFICATION DES 2 FONCTIONNALITES CRITIQUES
----------------------------------------------------------------------
 
 FONCTIONNALITE 1 : choose_movement_computer (game.cpp)
-------------------------------------------------------
-Structures de données mises en jeu :
+
+Structures :
 - Plateau P (tableau de 64 cases de type Case)
 - Masque M (tableau de 64 entiers)
 - game G (structure globale du jeu)
 
-Fonctions mises en jeu :
+Fonctions  :
 - choose_movement_computer() : fonction principale de sélection du coup
 - test_run() : vérifie si un mouvement est valide
 - highlights_possible_moves() : calcule le masque des mouvements possibles
@@ -22,16 +20,15 @@ Fonctions mises en jeu :
 - test_coup() : simule un coup sur un plateau temporaire
 - move_piece() : déplace une pièce sur le plateau
 
-Pourquoi cette fonctionnalité est critique :
-Cette fonction est au cœur de la logique de l'adversaire automatique.
+Cette fonction est la fonction, principale qui définie les mouvements de l'adversaire (ordinateur).
 Elle doit garantir que chaque coup joué par l'ordinateur est légal
 (pièce de la bonne couleur, destination valide, roi non mis en échec
-par son propre mouvement). Un bug ici rend la partie injouable.
+par son propre mouvement).
 
 
 FONCTIONNALITE 2 : backtrack_historique (historique.cpp)
----------------------------------------------------------
-Structures de données mises en jeu :
+
+Structures :
 - historique* (liste chaînée : coord_depart, coord_arrivee,
   piece_deplacee, piece_prise, suivant)
 - Plateau P (tableau de 64 cases)
@@ -42,37 +39,26 @@ Fonctions mises en jeu :
 - move_piece() : utilisée pour annuler le déplacement
 - print_board() : affichage du plateau après retour arrière
 
-Pourquoi cette fonctionnalité est critique :
 Elle permet de revenir en arrière dans la partie. Elle doit
 reconstruire exactement l'état du plateau avant le coup annulé,
-y compris remettre en place les pièces capturées. Une erreur ici
-corromprait l'état du jeu de manière irréversible.
+y compris remettre en place les pièces capturées.
 
-
----------------------------------------------------------------------
 A7.2.b : ANALYSE DES DEUX FONCTIONNALITES
----------------------------------------------------------------------
 
-== ANALYSE 1 : choose_movement_computer ==
 
---- Correction de l'algorithme ---
+ANALYSE 1 : choose_movement_computer
 
-La fonction tire aléatoirement une case source et une case destination
+
+La fonction tire aléatoirement une case de départ et une case destination
 (entre 0 et 63), puis vérifie 4 conditions dans le while :
   1. La case source n'est pas vide
   2. La pièce appartient à l'ordinateur (couleur correcte)
   3. Le mouvement est valide selon les règles (test_run)
   4. Le roi de l'ordinateur n'est pas en échec après ce coup (king_in_check)
 
-Si une condition échoue, deux nouveaux indices sont tirés au sort.
 La boucle se termine dès qu'un coup valide est trouvé.
 
-L'algorithme est correct dans le sens où il ne joue jamais un coup
-illégal. Cependant il repose sur une boucle potentiellement infinie :
-si aucun coup n'est disponible (partie nulle ou mat), la boucle ne
-se termine jamais. C'est un défaut important non géré.
-
---- Schéma d'appel ---
+Schéma d'appel :
 
 choose_movement_computer()
   └─> test_run()
@@ -84,7 +70,7 @@ choose_movement_computer()
   └─> test_coup()
         └─> move_piece()
 
---- Complexité temporelle ---
+Complexité temporelle 
 
 Dans le pire cas, chaque itération de la boucle while effectue :
 - test_run : O(64) pour parcourir le masque
@@ -179,6 +165,3 @@ mais plus coûteux en mémoire.
 La liste chaînée actuelle est donc un bon compromis : faible empreinte
 mémoire, retour arrière en O(N), sans duplication du plateau.
 
-=====================================================================
-FIN DE L'ANALYSE
-=====================================================================

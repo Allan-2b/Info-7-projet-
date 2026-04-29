@@ -17,6 +17,7 @@ bool king_in_check(Plateau P, int couleur_joueur);
 Plateau test_coup(Plateau P, int index, int index1);
 void compute_score(game G);
 bool est_nulle(game G);
+bool king_in_checkmate(Plateau P, int couleur_joueur);
 
 
 #endif 
