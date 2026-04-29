@@ -70,6 +70,84 @@ void compute_score(game *G){
     }
 }
 
+void promotion(game *G, int index, int choix){ 
+    /* fonction qui gère la promotion d'un pion lorsqu'il arrive sur la dernière rangée */
+    if(G->P.Tab[index].contenu == PW and index <= 7){
+        if(choix==1){
+            G->P.Tab[index].contenu = RW; /* promotion en tour blanche */
+        }
+        else if(choix==2){
+            G->P.Tab[index].contenu = NW; /* promotion en cavalier blanc */
+        }
+        else if(choix==3){
+            G->P.Tab[index].contenu = BW; /* promotion en fou blanc */
+        }
+        else{
+        G->P.Tab[index].contenu = QW; 
+        }
+    }
+    if(G->P.Tab[index].contenu == PB and index >= 56){
+        if(choix==1){
+            G->P.Tab[index].contenu = RB; /* promotion en tour noire */
+        }
+        else if(choix==2){
+            G->P.Tab[index].contenu = NB; /* promotion en cavalier noir */
+        }
+        else if(choix==3){
+            G->P.Tab[index].contenu = BB; /* promotion en fou noir */
+        }
+        else{
+        G->P.Tab[index].contenu = QB; 
+        }
+    }
+}
+
+bool verif_promotion(game *G){
+    /* fonction qui gère la promotion d'un pion lorsqu'il arrive sur la dernière rangée */
+    for(int i = 0; i < 64; i++){
+        if(G->P.Tab[i].contenu == PW and i <= 7){
+            return true;
+            
+        }
+        if(G->P.Tab[i].contenu == PB and i >= 56){
+            return true;
+        }
+    }
+    return false;
+}
+
+void lapromotion_humain(game *G){
+    if(verif_promotion(G)){
+        int choix;
+        cout << "Votre pion peut être promu ! Choisissez la pièce de promotion (1 pour tour, 2 pour cavalier, 3 pour fou, 4 pour reine) : ";
+        cin >> choix;
+        while (choix < 1 or choix > 4){
+            cout << "Choix invalide. Veuillez réessayer." << endl;
+            cin >> choix;
+        }
+        for(int i = 0; i < 64; i++){
+            if(G->P.Tab[i].contenu == PW and i <= 7){
+                promotion(G, i, choix);
+            }
+            if(G->P.Tab[i].contenu == PB and i >= 56){
+                promotion(G, i, choix);
+            }
+        }
+    }
+}
+void lapromotion_computer(game *G){
+    if(verif_promotion(G)){
+        for(int i = 0; i < 64; i++){
+            if(G->P.Tab[i].contenu == PW and i <= 7){
+                promotion(G, i, 4); /* promotion en reine blanche */
+            }
+            if(G->P.Tab[i].contenu == PB and i >= 56){
+                promotion(G, i, 4); /* promotion en reine noire */
+            }
+        }
+    }
+}
+
 
 bool est_nulle(game G){
     /*condition 2 : matériel insuffisant pour mater*/
@@ -230,7 +308,90 @@ bool king_in_checkmate(Plateau P, int couleur_joueur){
     return true;
 }
 
+bool piece_deja_bougee(historique* tete, pieces_type piece, int coord_depart){
+    while (tete != NULL) {
+        if (tete->piece_deplacee == piece and tete->coord_depart == coord_depart) {
+            return true;
+        }
+        tete = tete->suivant;
+    }
+    return false;
+}
 
+bool roque_possible(game *G, Plateau P, Case c1, Case c2){
+
+    /* roque basique côté blanc */
+    if (c1.contenu == KW and c2.contenu == RW and c1.coordonee == 60 and c2.coordonee == 63
+        and !piece_deja_bougee(G->hist, KW, 60) and !piece_deja_bougee(G->hist, RW, 63)
+        and P.Tab[61].contenu == Vide and P.Tab[62].contenu == Vide
+        and king_in_check(P, 0) == false and test_run(P, 60, 61) == true and test_run(P, 60, 62) == true) {
+        return true;
+    }
+
+    /* grand roque côté blanc */
+    if (c1.contenu == KW and c2.contenu == RW and c1.coordonee == 60 and c2.coordonee == 56
+        and !piece_deja_bougee(G->hist, KW, 60) and !piece_deja_bougee(G->hist, RW, 56)
+        and P.Tab[57].contenu == Vide and P.Tab[58].contenu == Vide and P.Tab[59].contenu == Vide
+        and king_in_check(P, 0) == false and test_run(P, 60, 59) == true and test_run(P, 60, 58) == true) {
+        return true;
+    }
+
+    /* roque basique côté noir */
+    if (c1.contenu == KB and c2.contenu == RB and c1.coordonee == 4 and c2.coordonee == 7
+        and !piece_deja_bougee(G->hist, KB, 4) and !piece_deja_bougee(G->hist, RB, 7)
+        and P.Tab[5].contenu == Vide and P.Tab[6].contenu == Vide
+        and king_in_check(P, 1) == false and test_run(P, 4, 5) == true and test_run(P, 4, 6) == true) {
+        return true;
+    }
+
+    /* grand roque côté noir */
+    if (c1.contenu == KB and c2.contenu == RB and c1.coordonee == 4 and c2.coordonee == 0
+        and !piece_deja_bougee(G->hist, KB, 4) and !piece_deja_bougee(G->hist, RB, 0)
+        and P.Tab[1].contenu == Vide and P.Tab[2].contenu == Vide and P.Tab[3].contenu == Vide
+        and king_in_check(P, 1) == false and test_run(P, 4, 3) == true and test_run(P, 4, 2) == true) {
+        return true;
+    }
+
+    return false;
+}
+
+bool roque(game *G, Plateau *P, Case c1, Case c2){
+    /* fonction qui effectue le roque si les conditions sont remplies */
+
+    if (!roque_possible(G, *P, c1, c2)) {
+        return false;
+    }
+
+    /*roque basique coté blanc*/
+    if(c1.contenu == KW and c2.contenu == RW and c1.coordonee == 60 and c2.coordonee == 63){
+        move_piece(P, c1, P->Tab[62]);
+        move_piece(P, c2, P->Tab[61]);
+        return true;
+    }
+
+    /*grand roque coté blanc*/
+    if (c1.contenu == KW and c2.contenu == RW and c1.coordonee == 60 and c2.coordonee == 56){
+        move_piece(P, c1, P->Tab[58]);
+        move_piece(P, c2, P->Tab[59]);
+        return true;
+    }
+
+    /*roque basique coté noir*/
+    if (c1.contenu == KB and c2.contenu == RB and c1.coordonee == 4 and c2.coordonee == 7){
+        move_piece(P, c1, P->Tab[6]);
+        move_piece(P, c2, P->Tab[5]);
+        return true;
+    }
+
+    /*grand roque coté noir*/
+    if (c1.contenu == KB and c2.contenu == RB and c1.coordonee == 4 and c2.coordonee == 0){
+        move_piece(P, c1, P->Tab[2]);
+        move_piece(P, c2, P->Tab[3]);
+        return true;
+    }
+
+    return false;
+}
 
 /*Choisit le mouvement pour le joueur humain*/
 void choose_movement_human(game *G,int couleur_joueur,int*choix_joueur){
@@ -249,6 +410,7 @@ void choose_movement_human(game *G,int couleur_joueur,int*choix_joueur){
     int row = 8 - (coord[1] - '0');
     int index = row * 8 + col;
     choix_joueur[0] = index;
+    pieces_type piece_depart = G->P.Tab[index].contenu;
     if (G->P.Tab[choix_joueur[0]].contenu % 2 != couleur_joueur or G->P.Tab[choix_joueur[0]].contenu == Vide){
         cout<<"Veuillez choisir une pièce de votre couleur."<<endl;
         choose_movement_human(G,couleur_joueur,choix_joueur);
@@ -262,6 +424,30 @@ void choose_movement_human(game *G,int couleur_joueur,int*choix_joueur){
     int col1 = coord1[0] - 'a';
     int row1 = 8 - (coord1[1] - '0');
     int index1 = row1 * 8 + col1;
+
+    if (roque_possible(G, G->P, G->P.Tab[index], G->P.Tab[index1]) == true){
+        if (roque(G, &G->P, G->P.Tab[index], G->P.Tab[index1]) == true){
+            if (piece_depart == KW and index == 60 and index1 == 63){
+                MAJ_historique(G, 60, 62, KW, Vide);
+                MAJ_historique(G, 63, 61, RW, Vide);
+            }
+            else if (piece_depart == KW and index == 60 and index1 == 56){
+                MAJ_historique(G, 60, 58, KW, Vide);
+                MAJ_historique(G, 56, 59, RW, Vide);
+            }
+            else if (piece_depart == KB and index == 4 and index1 == 7){
+                MAJ_historique(G, 4, 6, KB, Vide);
+                MAJ_historique(G, 7, 5, RB, Vide);
+            }
+            else if (piece_depart == KB and index == 4 and index1 == 0){
+                MAJ_historique(G, 4, 2, KB, Vide);
+                MAJ_historique(G, 0, 3, RB, Vide);
+            }
+            print_board(G->P);
+            return;
+        }
+    }
+
     if (king_in_check(test_coup(G->P, index, index1), couleur_joueur) == true){
         cout<<"Vous ne pouvez pas déplacer cette pièce car votre roi serait en échec."<<endl;
         choose_movement_human(G,couleur_joueur,choix_joueur);
@@ -336,6 +522,10 @@ void one_run_human(game *G, int *mouvement_humain){
     if (piece_arrivee != Vide){
         G->prise[piece_arrivee]++; /* on ajoute la piece prise dans le tableau de prise */
     }
+    // Gérer la promotion éventuelle avant d'enregistrer l'historique
+    if (verif_promotion(G)){
+        lapromotion_humain(G);
+    }
     MAJ_historique(G, mouvement_humain[0], mouvement_humain[1], G->P.Tab[mouvement_humain[1]].contenu, piece_arrivee); /* on met à jour l'historique du jeu */
     print_board(G->P);
 }
@@ -350,6 +540,10 @@ void one_run_computer(game *G){
     move_piece(&G->P, G->P.Tab[Tab[0]], G->P.Tab[Tab[1]]);
     if (piece_arrivee != Vide){
         G->prise[piece_arrivee]++; /* on ajoute la piece prise dans le tableau de prise */
+    }
+    // Gérer la promotion éventuelle avant d'enregistrer l'historique
+    if (verif_promotion(G)){
+        lapromotion_computer(G);
     }
     MAJ_historique(G, Tab[0], Tab[1], G->P.Tab[Tab[1]].contenu, piece_arrivee); /* on met à jour l'historique du jeu */
     print_board(G->P);
@@ -456,6 +650,16 @@ void run(game *G){
 
         if (est_nulle(*G)){
             cout << "Partie nulle" << endl;
+            return;
+        }
+
+        if (king_in_checkmate(G->P, G->couleur_joueur) == true){
+            cout << "Echec et mat ! vous avez perdu" << endl;
+            return;
+        }
+
+        if (king_in_checkmate(G->P, 1 - G->couleur_joueur) == true){
+            cout << "Echec et mat ! vous avez gagné" << endl;
             return;
         }
 

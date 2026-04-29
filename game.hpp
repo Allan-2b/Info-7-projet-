@@ -18,6 +18,11 @@ Plateau test_coup(Plateau P, int index, int index1);
 void compute_score(game G);
 bool est_nulle(game G);
 bool king_in_checkmate(Plateau P, int couleur_joueur);
+bool roque(game *G, Plateau *P, Case c1, Case c2);
+bool verif_promotion(game *G);
+void lapromotion_human(game *G);
+void lapromotion_computer(game *G);
+void promotion(game *G, int index, int choix);
 
 
 #endif 

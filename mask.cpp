@@ -262,16 +262,19 @@ void highlights_possible_moves_king(Plateau P, Masque *M, Case c){
             set_mask(M, nouvelle_case, 1);
         }
         // Pièce adverse on met la valeur 2 (rouge)
-        else if( (c.contenu == KW and (nouvelle_case.contenu == PB or nouvelle_case.contenu == NB or
-                                      nouvelle_case.contenu == BB or nouvelle_case.contenu == QB or
-                                      nouvelle_case.contenu == RB or nouvelle_case.contenu == KB)) or
-                 (c.contenu == KB and (nouvelle_case.contenu == PW or nouvelle_case.contenu == NW or
-                                      nouvelle_case.contenu == BW or nouvelle_case.contenu == QW or
-                                      nouvelle_case.contenu == RW or nouvelle_case.contenu == KW)) ){
+        else if(nouvelle_case.contenu % 2 != c.contenu % 2){
             set_mask(M, nouvelle_case, 2);
         }
         // Si c’est une pièce de la même couleur → on ne fait rien
     }
+}
+
+void highlights_king_roque(game *G, Plateau *P, Case c){
+    if(roque(G, P, c, P->Tab[63]) == true){
+        
+        set_mask(&G->M, P->Tab[63], 3); // vert = roque possible
+    }
+
 }
 
 /* Affiche le masque des mouvements possibles pour un fou */
@@ -300,12 +303,7 @@ void highlights_possible_moves_bishop(Plateau P, Masque *M, Case c){
         }
         else {
             // Pièce adverse ?
-            if( (c.contenu == BW and (nouvelle_case.contenu == PB or nouvelle_case.contenu == NB or
-                                    nouvelle_case.contenu == BB or nouvelle_case.contenu == QB or
-                                    nouvelle_case.contenu == RB or nouvelle_case.contenu == KB)) or
-                (c.contenu == BB and (nouvelle_case.contenu == PW or nouvelle_case.contenu == NW or
-                                    nouvelle_case.contenu == BW or nouvelle_case.contenu == QW or
-                                    nouvelle_case.contenu == RW or nouvelle_case.contenu == KW)) ){
+            if(nouvelle_case.contenu % 2 != c.contenu % 2){
                 set_mask(M, nouvelle_case, 2);   // rouge = capture
             }
             break;   // on s'arrête sur une pièce (même couleur ou adverse)
@@ -324,12 +322,7 @@ void highlights_possible_moves_bishop(Plateau P, Masque *M, Case c){
             set_mask(M, nouvelle_case, 1);
         }
         else {
-            if( (c.contenu == BW and (nouvelle_case.contenu == PB or nouvelle_case.contenu == NB or
-                                    nouvelle_case.contenu == BB or nouvelle_case.contenu == QB or
-                                    nouvelle_case.contenu == RB or nouvelle_case.contenu == KB)) or
-                (c.contenu == BB and (nouvelle_case.contenu == PW or nouvelle_case.contenu == NW or
-                                    nouvelle_case.contenu == BW or nouvelle_case.contenu == QW or
-                                    nouvelle_case.contenu == RW or nouvelle_case.contenu == KW)) ){
+            if(nouvelle_case.contenu % 2 != c.contenu % 2){
                 set_mask(M, nouvelle_case, 2);
             }
             break;
@@ -348,12 +341,7 @@ void highlights_possible_moves_bishop(Plateau P, Masque *M, Case c){
             set_mask(M, nouvelle_case, 1);
         }
         else {
-            if( (c.contenu == BW and (nouvelle_case.contenu == PB or nouvelle_case.contenu == NB or
-                                    nouvelle_case.contenu == BB or nouvelle_case.contenu == QB or
-                                    nouvelle_case.contenu == RB or nouvelle_case.contenu == KB)) or
-                (c.contenu == BB and (nouvelle_case.contenu == PW or nouvelle_case.contenu == NW or
-                                    nouvelle_case.contenu == BW or nouvelle_case.contenu == QW or
-                                    nouvelle_case.contenu == RW or nouvelle_case.contenu == KW)) ){
+            if(nouvelle_case.contenu % 2 != c.contenu % 2){
                 set_mask(M, nouvelle_case, 2);
             }
             break;
@@ -372,12 +360,7 @@ void highlights_possible_moves_bishop(Plateau P, Masque *M, Case c){
             set_mask(M, nouvelle_case, 1);
         }
         else {
-            if( (c.contenu == BW and (nouvelle_case.contenu == PB or nouvelle_case.contenu == NB or
-                                    nouvelle_case.contenu == BB or nouvelle_case.contenu == QB or
-                                    nouvelle_case.contenu == RB or nouvelle_case.contenu == KB)) or
-                (c.contenu == BB and (nouvelle_case.contenu == PW or nouvelle_case.contenu == NW or
-                                    nouvelle_case.contenu == BW or nouvelle_case.contenu == QW or
-                                    nouvelle_case.contenu == RW or nouvelle_case.contenu == KW)) ){
+            if(nouvelle_case.contenu % 2 != c.contenu % 2){
                 set_mask(M, nouvelle_case, 2);
             }
             break;
@@ -388,211 +371,9 @@ void highlights_possible_moves_bishop(Plateau P, Masque *M, Case c){
 
 /* Affiche le masque des mouvements possibles pour une reine */
 void highlights_possible_moves_queen(Plateau P, Masque *M, Case c){
-    // On colore le fou lui-même en violet 
-    set_mask(M, c, 5);
-
-    // Les 4 directions diagonales du fou
-    int diagonale_haut_gauche = -9;
-    int diagonale_haut_droit  = -7;
-    int diagonale_bas_gauche  = 7;
-    int diagonale_bas_droit   = 9;
-    int haut = -8;
-    int bas = 8;
-    int gauche = -1;
-    int droite = 1;
-
-    int col = c.coordonee % 8;   // numéro de colonne du fou (0=a, 7=h)
-
-    //  Diagonale Haut-Gauche 
-
-
-    int pos = c.coordonee + diagonale_haut_gauche;
-    while(pos >= 0 and pos < 64){
-        if(pos % 8 >= col + 1) break;   // on a traversé le bord 
-
-        Case nouvelle_case = P.Tab[pos];
-
-        if(nouvelle_case.contenu == Vide){
-            set_mask(M, nouvelle_case, 1);   // bleu = case vide
-        }
-        else {
-            // Pièce adverse ?
-            if( (c.contenu == QW and (nouvelle_case.contenu == PB or nouvelle_case.contenu == NB or
-                                    nouvelle_case.contenu == BB or nouvelle_case.contenu == QB or
-                                    nouvelle_case.contenu == RB or nouvelle_case.contenu == KB)) or
-                (c.contenu == QB and (nouvelle_case.contenu == PW or nouvelle_case.contenu == NW or
-                                    nouvelle_case.contenu == BW or nouvelle_case.contenu == QW or
-                                    nouvelle_case.contenu == RW or nouvelle_case.contenu == KW)) ){
-                set_mask(M, nouvelle_case, 2);   // rouge = capture
-            }
-            break;   // on s'arrête sur une pièce (même couleur ou adverse)
-        }
-        pos += diagonale_haut_gauche;   // on continue plus loin
-    }
-
-    // Diagonale Haut-Droite 
-    pos = c.coordonee + diagonale_haut_droit;
-    while(pos >= 0 and pos < 64){
-        if(pos % 8 <= col - 1) break;
-
-        Case nouvelle_case = P.Tab[pos];
-
-        if(nouvelle_case.contenu == Vide){
-            set_mask(M, nouvelle_case, 1);
-        }
-        else {
-            if( (c.contenu == QW and (nouvelle_case.contenu == PB or nouvelle_case.contenu == NB or
-                                    nouvelle_case.contenu == BB or nouvelle_case.contenu == QB or
-                                    nouvelle_case.contenu == RB or nouvelle_case.contenu == KB)) or
-                (c.contenu == QB and (nouvelle_case.contenu == PW or nouvelle_case.contenu == NW or
-                                    nouvelle_case.contenu == BW or nouvelle_case.contenu == QW or
-                                    nouvelle_case.contenu == RW or nouvelle_case.contenu == KW)) ){
-                set_mask(M, nouvelle_case, 2);
-            }
-            break;
-        }
-        pos += diagonale_haut_droit;
-    }
-
-    // Diagonale Bas-Gauche 
-    pos = c.coordonee + diagonale_bas_gauche;
-    while(pos >= 0 and pos < 64){
-        if(pos % 8 >= col + 1) break;
-
-        Case nouvelle_case = P.Tab[pos];
-
-        if(nouvelle_case.contenu == Vide){
-            set_mask(M, nouvelle_case, 1);
-        }
-        else {
-            if( (c.contenu == QW and (nouvelle_case.contenu == PB or nouvelle_case.contenu == NB or
-                                    nouvelle_case.contenu == BB or nouvelle_case.contenu == QB or
-                                    nouvelle_case.contenu == RB or nouvelle_case.contenu == KB)) or
-                (c.contenu == QB and (nouvelle_case.contenu == PW or nouvelle_case.contenu == NW or
-                                    nouvelle_case.contenu == BW or nouvelle_case.contenu == QW or
-                                    nouvelle_case.contenu == RW or nouvelle_case.contenu == KW)) ){
-                set_mask(M, nouvelle_case, 2);
-            }
-            break;
-        }
-        pos += diagonale_bas_gauche;
-    }
-
-    //. Diagonale Bas-Droite
-    pos = c.coordonee + diagonale_bas_droit;
-    while(pos >= 0 and pos < 64){
-        if(pos % 8 <= col - 1) break;
-
-        Case nouvelle_case = P.Tab[pos];
-
-        if(nouvelle_case.contenu == Vide){
-            set_mask(M, nouvelle_case, 1);
-        }
-        else {
-            if( (c.contenu == QW and (nouvelle_case.contenu == PB or nouvelle_case.contenu == NB or
-                                    nouvelle_case.contenu == BB or nouvelle_case.contenu == QB or
-                                    nouvelle_case.contenu == RB or nouvelle_case.contenu == KB)) or
-                (c.contenu == QB and (nouvelle_case.contenu == PW or nouvelle_case.contenu == NW or
-                                    nouvelle_case.contenu == BW or nouvelle_case.contenu == QW or
-                                    nouvelle_case.contenu == RW or nouvelle_case.contenu == KW)) ){
-                set_mask(M, nouvelle_case, 2);
-            }
-            break;
-        }
-        pos += diagonale_bas_droit;
-    }
-    // Haut
-    pos = c.coordonee + haut;
-    while(pos >= 0 and pos < 64){
-        if(pos % 8 <= col - 1) break;
-
-        Case nouvelle_case = P.Tab[pos];
-
-        if(nouvelle_case.contenu == Vide){
-            set_mask(M, nouvelle_case, 1);
-        }
-        else {
-            if( (c.contenu == QW and (nouvelle_case.contenu == PB or nouvelle_case.contenu == NB or
-                                    nouvelle_case.contenu == BB or nouvelle_case.contenu == QB or
-                                    nouvelle_case.contenu == RB or nouvelle_case.contenu == KB)) or
-                (c.contenu == QB and (nouvelle_case.contenu == PW or nouvelle_case.contenu == NW or
-                                    nouvelle_case.contenu == BW or nouvelle_case.contenu == QW or
-                                    nouvelle_case.contenu == RW or nouvelle_case.contenu == KW)) ){
-                set_mask(M, nouvelle_case, 2);
-            }
-            break;
-        }
-        pos += haut;
-    }
-     // Bas
-    pos = c.coordonee + bas;
-    while(pos >= 0 and pos < 64){
-        if(pos % 8 <= col - 1) break;
-
-        Case nouvelle_case = P.Tab[pos];
-
-        if(nouvelle_case.contenu == Vide){
-            set_mask(M, nouvelle_case, 1);
-        }
-        else {
-            if( (c.contenu == QW and (nouvelle_case.contenu == PB or nouvelle_case.contenu == NB or
-                                    nouvelle_case.contenu == BB or nouvelle_case.contenu == QB or
-                                    nouvelle_case.contenu == RB or nouvelle_case.contenu == KB)) or
-                (c.contenu == QB and (nouvelle_case.contenu == PW or nouvelle_case.contenu == NW or
-                                    nouvelle_case.contenu == BW or nouvelle_case.contenu == QW or
-                                    nouvelle_case.contenu == RW or nouvelle_case.contenu == KW)) ){
-                set_mask(M, nouvelle_case, 2);
-            }
-            break;
-        }
-        pos += bas;
-    }
-    // Droite
-    pos = c.coordonee + droite;
-    while(pos >= 0 and pos < 64){
-        if(pos % 8 <= col - 1) break;
-
-        Case nouvelle_case = P.Tab[pos];
-
-        if(nouvelle_case.contenu == Vide){
-            set_mask(M, nouvelle_case, 1);
-        }
-        else {
-            if( (c.contenu == QW and (nouvelle_case.contenu == PB or nouvelle_case.contenu == NB or
-                                    nouvelle_case.contenu == BB or nouvelle_case.contenu == QB or
-                                    nouvelle_case.contenu == RB or nouvelle_case.contenu == KB)) or
-                (c.contenu == QB and (nouvelle_case.contenu == PW or nouvelle_case.contenu == NW or
-                                    nouvelle_case.contenu == BW or nouvelle_case.contenu == QW or
-                                    nouvelle_case.contenu == RW or nouvelle_case.contenu == KW)) ){
-                set_mask(M, nouvelle_case, 2);
-            }
-            break;
-        }
-        pos += droite;
-    }
-     // gauche
-    pos = c.coordonee + gauche;
-    while(pos >= 0 and pos < 64){
-        if(pos % 8 >= col + 1) break;
-
-        Case nouvelle_case = P.Tab[pos];
-
-        if(nouvelle_case.contenu == Vide){
-            set_mask(M, nouvelle_case, 1);
-        }
-        else {
-            if( (c.contenu == QW and (nouvelle_case.contenu == PB or nouvelle_case.contenu == NB or
-                                    nouvelle_case.contenu == BB or nouvelle_case.contenu == QB or
-                                    nouvelle_case.contenu == RB or nouvelle_case.contenu == KB)) or
-                (c.contenu == QB and (nouvelle_case.contenu == PW or nouvelle_case.contenu == NW or
-                                    nouvelle_case.contenu == BW or nouvelle_case.contenu == QW or
-                                    nouvelle_case.contenu == RW or nouvelle_case.contenu == KW)) ){
-                set_mask(M, nouvelle_case, 2);
-            }
-            break;
-        }
-        pos += gauche;
-    }
+    // La reine combine les mouvements de la tour et du fou
+    highlights_possible_moves_rook(P, M, c);
+    highlights_possible_moves_bishop(P, M, c);
 }
 
 /* Affiche les mouvements possibles pour un pion */
@@ -787,15 +568,8 @@ bool can_attack(Plateau P, Case c) { // Sous fonction pour highlight_take_pieces
 
 /*Masque pour voir les pièces qui peuvent être déplacées*/
 void highlight_movable_pieces(Plateau P, Masque *M,int N){ // 0 pour blanc et 1 pour noir
-    Masque M1;
-    empty_mask(&M1);
-    for(int i = 0; i < 64; i++){
-        if(P.Tab[i].contenu != Vide){
-            highlights_possible_moves(P, &M1, P.Tab[i]);
-        }
-    }
     for(int j=0; j<64; j++){
-        if(can_move(P, P.Tab[j])==true and M1.Tab[j] != 0 and P.Tab[j].contenu % 2 == N){
+        if(can_move(P, P.Tab[j])==true and P.Tab[j].contenu != Vide and P.Tab[j].contenu % 2 == N){
             set_mask(M, P.Tab[j], 3);
         }
     }

@@ -60,15 +60,6 @@ La boucle se termine dès qu'un coup valide est trouvé.
 
 Schéma d'appel :
 
-choose_movement_computer()
-  └─> test_run()
-        └─> highlights_possible_moves()
-              └─> highlights_possible_moves_<piece>()
-  └─> king_in_check()
-        └─> highlights_attacked_pieces()
-        └─> get_mask()
-  └─> test_coup()
-        └─> move_piece()
 
 Complexité temporelle 
 
@@ -76,34 +67,27 @@ Dans le pire cas, chaque itération de la boucle while effectue :
 - test_run : O(64) pour parcourir le masque
 - king_in_check : O(64) pour parcourir les pièces adverses + O(64) pour
   chercher le roi dans le masque → O(64)
-- test_coup : O(1) (simple copie + move_piece)
-
-Soit O(64) par itération, avec un nombre d'itérations non borné
-dans le pire cas (aléatoire pur).
-
-En pratique, avec 20 coups légaux disponibles en moyenne, et 64*64 = 4096
-paires possibles, la probabilité de tomber sur un coup valide est ~0.5%
-au premier tirage. Le nombre moyen d'itérations est donc ~200, soit
+- test_coup : O(1) 
+Soit O(64) par itération avec nbre aléatoire
+avec 20 coups légaux disponibles en moyenne, et 64*64 = 4096
+paires possibles, la probabilité de tomber sur un coup valide est d'environ 0.5%
+au premier tirage. Le nombre moyen d'itérations est donc  d'environ 200, soit
 environ 200 * 64 = 12 800 opérations en moyenne par tour.
 
---- Complexité spatiale ---
+Complexité spatiale 
 
 O(1) : uniquement 2 entiers (indices) + 1 plateau temporaire de 64 cases.
 
---- Alternatives ---
+Alternatives
 
 Une alternative meilleure serait de :
 1. Lister d'abord toutes les pièces jouables dans un tableau (O(64))
 2. Pour chaque pièce, lister ses coups légaux avec le masque (O(64))
 3. Choisir aléatoirement parmi les coups légaux trouvés
-
-Cela garantirait une terminaison en O(64²) dans le pire cas,
-sans risque de boucle infinie.
+ça ferait O(64²) dans le pire cas,
 
 
-== ANALYSE 2 : backtrack_historique ==
-
---- Correction de l'algorithme ---
+ANALYSE 2 : backtrack_historique
 
 La fonction prend en paramètre le nombre d'étapes à reculer.
 Pour chaque étape, elle recule de 2 coups (1 coup humain + 1 coup
@@ -117,51 +101,24 @@ Pour chaque coup annulé :
 5. On remet la pièce déplacée : Tab[coord_depart] = piece_deplacee
 6. On libère la mémoire de l'entrée historique (delete temp)
 
-L'étape 4 est nécessaire car move_piece efface la case d'arrivée.
-Sans elle, les pièces capturées ne réapparaîtraient pas.
 
-Cependant, il y a un défaut : move_piece est appelé avant de remettre
-manuellement les contenus des cases. Comme move_piece échange les
-contenus, cela peut provoquer un état intermédiaire incohérent.
-Un simple set_square serait plus fiable que move_piece pour l'annulation.
+Schéma d'appel
 
---- Schéma d'appel ---
 
-backtrack_historique()
-  └─> move_piece()
-        └─> get_square()
-        └─> manger_piece()
-        └─> set_square()
-  └─> print_board()
 
---- Complexité temporelle ---
+Complexité temporelle
 
 Pour un retour de N étapes, et 2 coups par étape :
 - Chaque annulation de coup : O(1) (accès direct aux cases par indice)
 - print_board final : O(64)
 
 Complexité totale : O(N) + O(64) = O(N + 64) ≈ O(N)
+N est petit, donc très rapide.
 
-En pratique N est petit (quelques coups), donc très rapide.
-
---- Complexité spatiale ---
-
-La liste chaînée historique occupe O(K) en mémoire, où K est le nombre
-de coups joués depuis le début de la partie.
-Chaque nœud historique contient : 2 int (coordonnées) + 2 pieces_type
-(enum, généralement 4 octets chacun) + 1 pointeur = ~20 octets.
-Pour une partie de 200 coups : ~4 Ko. Négligeable.
-
-Après backtrack de N étapes, 2*N nœuds sont libérés : O(1) supplémentaire
-par nœud grâce au delete.
-
---- Alternatives ---
+Alternatives
 
 Une alternative serait de sauvegarder l'intégralité du plateau à chaque
-coup (snapshot). Le retour arrière serait immédiat (O(1)) mais la mémoire
-utilisée serait O(K * 64) soit ~100 Ko pour 200 coups. C'est acceptable
-mais plus coûteux en mémoire.
+coup. Le retour arrière serait immédiat mais la mémoire
+utilisée serait beaucoup plus important
 
-La liste chaînée actuelle est donc un bon compromis : faible empreinte
-mémoire, retour arrière en O(N), sans duplication du plateau.
 
