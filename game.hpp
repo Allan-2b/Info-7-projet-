@@ -23,6 +23,10 @@ bool verif_promotion(game *G);
 void lapromotion_human(game *G);
 void lapromotion_computer(game *G);
 void promotion(game *G, int index, int choix);
+bool roque_possible(game *G, Plateau P, Case c1, Case c2);
+bool piece_deja_bougee(historique* tete, pieces_type piece, int coord_depart);
+bool roque(game *G, Plateau *P, Case c1, Case c2);
+
 
 
 #endif 

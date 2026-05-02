@@ -308,9 +308,12 @@ bool king_in_checkmate(Plateau P, int couleur_joueur){
     return true;
 }
 
+
+/*fonction qui vérifie si une pièce a déjà été déplacée */
 bool piece_deja_bougee(historique* tete, pieces_type piece, int coord_depart){
     while (tete != NULL) {
-        if (tete->piece_deplacee == piece and tete->coord_depart == coord_depart) {
+        if (tete->piece_deplacee == piece and tete->coord_depart == coord_depart) { 
+            /*si la pièce a déjà été déplacée depuis sa position initiale*/
             return true;
         }
         tete = tete->suivant;
@@ -318,37 +321,49 @@ bool piece_deja_bougee(historique* tete, pieces_type piece, int coord_depart){
     return false;
 }
 
+/*fonction qui vérifie si le roque est possible*/
 bool roque_possible(game *G, Plateau P, Case c1, Case c2){
 
-    /* roque basique côté blanc */
+    /* Petit roque blanc : roi e1(60)->g1(62), tour h1(63)->f1(61) */
     if (c1.contenu == KW and c2.contenu == RW and c1.coordonee == 60 and c2.coordonee == 63
         and !piece_deja_bougee(G->hist, KW, 60) and !piece_deja_bougee(G->hist, RW, 63)
         and P.Tab[61].contenu == Vide and P.Tab[62].contenu == Vide
-        and king_in_check(P, 0) == false and test_run(P, 60, 61) == true and test_run(P, 60, 62) == true) {
+        and king_in_check(P, 0) == false
+        and king_in_check(test_coup(P, 60, 61), 0) == false
+        and king_in_check(test_coup(P, 60, 62), 0) == false) {
+        // Toutes les conditions du petit roque blanc sont remplies :
+        // le roi et la tour n'ont pas bougé, les cases entre eux sont vides, 
+        // et le roi n'est pas en échec avant, pendant ou après le déplacement.
         return true;
     }
 
-    /* grand roque côté blanc */
+    /* Grand roque blanc : roi e1(60)->c1(58), tour a1(56)->d1(59) */
     if (c1.contenu == KW and c2.contenu == RW and c1.coordonee == 60 and c2.coordonee == 56
         and !piece_deja_bougee(G->hist, KW, 60) and !piece_deja_bougee(G->hist, RW, 56)
         and P.Tab[57].contenu == Vide and P.Tab[58].contenu == Vide and P.Tab[59].contenu == Vide
-        and king_in_check(P, 0) == false and test_run(P, 60, 59) == true and test_run(P, 60, 58) == true) {
+        and king_in_check(P, 0) == false
+        and king_in_check(test_coup(P, 60, 59), 0) == false
+        and king_in_check(test_coup(P, 60, 58), 0) == false) {
         return true;
     }
 
-    /* roque basique côté noir */
+    /* Petit roque noir : roi e8(4)->g8(6), tour h8(7)->f8(5) */
     if (c1.contenu == KB and c2.contenu == RB and c1.coordonee == 4 and c2.coordonee == 7
         and !piece_deja_bougee(G->hist, KB, 4) and !piece_deja_bougee(G->hist, RB, 7)
         and P.Tab[5].contenu == Vide and P.Tab[6].contenu == Vide
-        and king_in_check(P, 1) == false and test_run(P, 4, 5) == true and test_run(P, 4, 6) == true) {
+        and king_in_check(P, 1) == false
+        and king_in_check(test_coup(P, 4, 5), 1) == false
+        and king_in_check(test_coup(P, 4, 6), 1) == false) {
         return true;
     }
 
-    /* grand roque côté noir */
+    /* Grand roque noir : roi e8(4)->c8(2), tour a8(0)->d8(3) */
     if (c1.contenu == KB and c2.contenu == RB and c1.coordonee == 4 and c2.coordonee == 0
         and !piece_deja_bougee(G->hist, KB, 4) and !piece_deja_bougee(G->hist, RB, 0)
         and P.Tab[1].contenu == Vide and P.Tab[2].contenu == Vide and P.Tab[3].contenu == Vide
-        and king_in_check(P, 1) == false and test_run(P, 4, 3) == true and test_run(P, 4, 2) == true) {
+        and king_in_check(P, 1) == false
+        and king_in_check(test_coup(P, 4, 3), 1) == false
+        and king_in_check(test_coup(P, 4, 2), 1) == false) {
         return true;
     }
 
@@ -356,37 +371,46 @@ bool roque_possible(game *G, Plateau P, Case c1, Case c2){
 }
 
 bool roque(game *G, Plateau *P, Case c1, Case c2){
-    /* fonction qui effectue le roque si les conditions sont remplies */
+    /* fonction qui effectue le roque si les conditions sont remplies.
+       On place roi et tour directement avec set_square et pas move_piece pour eviter des problèmes */
 
     if (!roque_possible(G, *P, c1, c2)) {
         return false;
     }
 
-    /*roque basique coté blanc*/
+    /*roque basique coté blanc : roi e1->g1, tour h1->f1*/
     if(c1.contenu == KW and c2.contenu == RW and c1.coordonee == 60 and c2.coordonee == 63){
-        move_piece(P, c1, P->Tab[62]);
-        move_piece(P, c2, P->Tab[61]);
+        set_square(P, P->Tab[62], KW);
+        set_square(P, P->Tab[61], RW);
+        set_square(P, P->Tab[60], Vide);
+        set_square(P, P->Tab[63], Vide);
         return true;
     }
 
-    /*grand roque coté blanc*/
+    /*grand roque coté blanc : roi e1->c1, tour a1->d1*/
     if (c1.contenu == KW and c2.contenu == RW and c1.coordonee == 60 and c2.coordonee == 56){
-        move_piece(P, c1, P->Tab[58]);
-        move_piece(P, c2, P->Tab[59]);
+        set_square(P, P->Tab[58], KW);
+        set_square(P, P->Tab[59], RW);
+        set_square(P, P->Tab[60], Vide);
+        set_square(P, P->Tab[56], Vide);
         return true;
     }
 
-    /*roque basique coté noir*/
+    /*roque basique coté noir : roi e8->g8, tour h8->f8*/
     if (c1.contenu == KB and c2.contenu == RB and c1.coordonee == 4 and c2.coordonee == 7){
-        move_piece(P, c1, P->Tab[6]);
-        move_piece(P, c2, P->Tab[5]);
+        set_square(P, P->Tab[6], KB);
+        set_square(P, P->Tab[5], RB);
+        set_square(P, P->Tab[4], Vide);
+        set_square(P, P->Tab[7], Vide);
         return true;
     }
 
-    /*grand roque coté noir*/
+    /*grand roque coté noir : roi e8->c8, tour a8->d8*/
     if (c1.contenu == KB and c2.contenu == RB and c1.coordonee == 4 and c2.coordonee == 0){
-        move_piece(P, c1, P->Tab[2]);
-        move_piece(P, c2, P->Tab[3]);
+        set_square(P, P->Tab[2], KB);
+        set_square(P, P->Tab[3], RB);
+        set_square(P, P->Tab[4], Vide);
+        set_square(P, P->Tab[0], Vide);
         return true;
     }
 
@@ -416,7 +440,11 @@ void choose_movement_human(game *G,int couleur_joueur,int*choix_joueur){
         choose_movement_human(G,couleur_joueur,choix_joueur);
         return;
     }
+    clear_mask(&G->M);
     highlights_possible_moves(G->P, &G->M, G->P.Tab[index]);
+    if (piece_depart == KW or piece_depart == KB){
+        highlights_king_roque(G, &G->P, G->P.Tab[index]);
+    }
     print_board(G->P, G->M);
     cout<<"Entrez la coordonnée de la case de destination (ex: e4) : ";
     string coord1;
@@ -425,25 +453,46 @@ void choose_movement_human(game *G,int couleur_joueur,int*choix_joueur){
     int row1 = 8 - (coord1[1] - '0');
     int index1 = row1 * 8 + col1;
 
+    // Convertir les mouvements de roque indiqué par le joueur: si le roi blanc va en g1, c'est vers la tour h1
+    // dans les règles des échecs, le roi se déplace de 2 cases vers la tour puis on place la tour de l'autre côté du roi.
+    // Donc on convertit g1 en h1 pour le petit roque et c1 en a1 pour le grand roque, et pareil pour les noirs
+    if (piece_depart == KW and index == 60 and index1 == 62) {
+        index1 = 63; // Petit roque blanc: convertir g1 -> h1
+    }
+    else if (piece_depart == KW and index == 60 and index1 == 58) {
+        index1 = 56; // Grand roque blanc: convertir c1 -> a1
+    }
+    else if (piece_depart == KB and index == 4 and index1 == 6) {
+        index1 = 7; // Petit roque noir: convertir g8 -> h8
+    }
+    else if (piece_depart == KB and index == 4 and index1 == 2) {
+        index1 = 0; // Grand roque noir: convertir c8 -> a8
+    }
+    /* Vérifier si le mouvement est un roque et l'exécuter directement dans ce cas, en mettant à jour l'historique en conséquence */
     if (roque_possible(G, G->P, G->P.Tab[index], G->P.Tab[index1]) == true){
         if (roque(G, &G->P, G->P.Tab[index], G->P.Tab[index1]) == true){
+            /* Mise à jour de l'historique avec les positions réelles après roque
+               (et non les cases de la tour passées en paramètre) */
             if (piece_depart == KW and index == 60 and index1 == 63){
-                MAJ_historique(G, 60, 62, KW, Vide);
-                MAJ_historique(G, 63, 61, RW, Vide);
+                MAJ_historique(G, 60, 62, KW, Vide); /* roi : e1 -> g1 */
+                MAJ_historique(G, 63, 61, RW, Vide); /* tour : h1 -> f1 */
             }
             else if (piece_depart == KW and index == 60 and index1 == 56){
-                MAJ_historique(G, 60, 58, KW, Vide);
-                MAJ_historique(G, 56, 59, RW, Vide);
+                MAJ_historique(G, 60, 58, KW, Vide); /* roi : e1 -> c1 */
+                MAJ_historique(G, 56, 59, RW, Vide); /* tour : a1 -> d1 */
             }
             else if (piece_depart == KB and index == 4 and index1 == 7){
-                MAJ_historique(G, 4, 6, KB, Vide);
-                MAJ_historique(G, 7, 5, RB, Vide);
+                MAJ_historique(G, 4, 6, KB, Vide); /* roi : e8 -> g8 */
+                MAJ_historique(G, 7, 5, RB, Vide); /* tour : h8 -> f8 */
             }
             else if (piece_depart == KB and index == 4 and index1 == 0){
-                MAJ_historique(G, 4, 2, KB, Vide);
-                MAJ_historique(G, 0, 3, RB, Vide);
+                MAJ_historique(G, 4, 2, KB, Vide); /* roi : e8 -> c8 */
+                MAJ_historique(G, 0, 3, RB, Vide); /* tour : a8 -> d8 */
             }
             print_board(G->P);
+            /*sert a signaler à one_run_human que le roque est déjà effectué */
+            choix_joueur[0] = -1;
+            choix_joueur[1] = -1;
             return;
         }
     }
@@ -515,6 +564,12 @@ void one_run_human(game *G, int *mouvement_humain){
     if (mouvement_humain == NULL){
         choose_movement_human(G, G->couleur_joueur, choix_joueur);
         mouvement_humain = choix_joueur;
+    }
+
+    /* Si le roque a déjà été exécuté dans choose_movement_human (sentinelle -1),
+       on ne rejoue pas de move_piece. */
+    if (mouvement_humain[0] == -1 and mouvement_humain[1] == -1){
+        return;
     }
 
     pieces_type piece_arrivee = G->P.Tab[mouvement_humain[1]].contenu;
@@ -589,6 +644,8 @@ void run(game *G){
         cout << "Entrez le nom du fichier de sauvegarde (ex: sauvegarde.txt) : ";
         cin >> fen;
         read_FEN(fen, &G->P);
+        empty_mask(&G->M);
+        G->hist = nullptr;
         print_board(G->P);
 
         if (est_nulle(*G)){

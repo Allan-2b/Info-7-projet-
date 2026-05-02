@@ -13,6 +13,7 @@ void highlights_possible_moves_rook(Plateau P, Masque* M, Case c);
 void highlights_possible_moves_knight(Plateau P, Masque* M, Case c);
 void highlights_possible_moves_bishop(Plateau P, Masque* M, Case c);
 void highlights_possible_moves_queen(Plateau P, Masque* M, Case c);
+void highlights_king_roque(game *G, Plateau *P, Case c);
 void highlight_movable_pieces(Plateau P, Masque *M, int N);
 void highlight_take_pieces(Plateau P, Masque *M, int N);
 void highlights_attacked_pieces(Plateau P, Masque *M, Masque *M1, int Couleur_joueur);

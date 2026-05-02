@@ -270,9 +270,21 @@ void highlights_possible_moves_king(Plateau P, Masque *M, Case c){
 }
 
 void highlights_king_roque(game *G, Plateau *P, Case c){
-    if(roque(G, P, c, P->Tab[63]) == true){
-        
-        set_mask(&G->M, P->Tab[63], 3); // vert = roque possible
+    if (c.contenu == KW) {
+        if (roque_possible(G, *P, c, P->Tab[63]) == true) {
+            set_mask(&G->M, P->Tab[62], 3); // petit roque blanc: afficher g1 en vert
+        }
+        if (roque_possible(G, *P, c, P->Tab[56]) == true) {
+            set_mask(&G->M, P->Tab[58], 3); // grand roque blanc: afficher c1 en vert
+        }
+    }
+    else if (c.contenu == KB) {
+        if (roque_possible(G, *P, c, P->Tab[7]) == true) {
+            set_mask(&G->M, P->Tab[6], 3); // petit roque noir: afficher g8 en vert
+        }
+        if (roque_possible(G, *P, c, P->Tab[0]) == true) {
+            set_mask(&G->M, P->Tab[2], 3); // grand roque noir: afficher c8 en vert
+        }
     }
 
 }
