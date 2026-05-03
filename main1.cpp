@@ -2,9 +2,9 @@
 
 
 
-#ifdef _WIN32
-#include <windows.h>
-#endif
+//#ifdef _WIN32
+//#include <windows.h>
+//#endif
 
 
 #include "board.hpp"
@@ -19,9 +19,9 @@ using namespace std;
 int main(){
     
     /* Initialisation de la console pour windows */
-    #ifdef _WIN32
-    SetConsoleOutputCP(65001); 
-    #endif
+    //#ifdef _WIN32
+    //SetConsoleOutputCP(65001); 
+    //#endif
     
     game G;
     empty_mask(&G.M);
